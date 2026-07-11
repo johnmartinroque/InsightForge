@@ -1,7 +1,12 @@
 import React from "react";
+import PDFViewer from "../components/PDFViewer";
 
 function Home() {
-  return <div>Home</div>;
+  return (
+    <div>
+      <PDFViewer />
+    </div>
+  );
 }
 
 export default Home;
