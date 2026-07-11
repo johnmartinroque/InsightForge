@@ -1,10 +1,81 @@
-import React from "react";
+import React, { useState } from "react";
+import { supabase } from "../lib/supabaseClient";
 
 function RegisterForm() {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    agreeToTerms: false,
+  });
+  const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  function handleChange(event) {
+    const { name, value, type, checked } = event.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    setMessage("");
+
+    if (formData.password !== formData.confirmPassword) {
+      setMessage("Passwords do not match.");
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setMessage("Password must be at least 6 characters long.");
+      return;
+    }
+
+    if (!formData.agreeToTerms) {
+      setMessage("Please accept the terms and privacy policy.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const { error } = await supabase.auth.signUp({
+      email: formData.email.trim(),
+      password: formData.password,
+      options: {
+        data: {
+          full_name: formData.fullName.trim(),
+        },
+        emailRedirectTo: window.location.origin,
+      },
+    });
+
+    setIsSubmitting(false);
+
+    if (error) {
+      setMessage(error.message);
+      return;
+    }
+
+    setMessage("Account created! Please check your email to confirm your registration.");
+    setFormData({
+      fullName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      agreeToTerms: false,
+    });
+  }
+
   return (
     <div className="flex h-[700px] w-full">
       <div className="w-full flex flex-col items-center justify-center">
-        <form className="md:w-96 w-80 flex flex-col items-center justify-center">
+        <form
+          onSubmit={handleSubmit}
+          className="md:w-96 w-80 flex flex-col items-center justify-center"
+        >
           <h2 className="text-4xl text-gray-900 font-medium">Create account</h2>
           <p className="text-sm text-gray-500/90 mt-3">
             Join InsightForge and get started today
@@ -42,7 +113,10 @@ function RegisterForm() {
               />
             </svg>
             <input
+              name="fullName"
               type="text"
+              value={formData.fullName}
+              onChange={handleChange}
               placeholder="Full name"
               className="bg-transparent text-gray-500/80 placeholder-gray-500/80 outline-none text-sm w-full h-full"
               required
@@ -65,8 +139,11 @@ function RegisterForm() {
               />
             </svg>
             <input
+              name="email"
               type="email"
-              placeholder="Email id"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Email"
               className="bg-transparent text-gray-500/80 placeholder-gray-500/80 outline-none text-sm w-full h-full"
               required
             />
@@ -86,7 +163,10 @@ function RegisterForm() {
               />
             </svg>
             <input
+              name="password"
               type="password"
+              value={formData.password}
+              onChange={handleChange}
               placeholder="Password"
               className="bg-transparent text-gray-500/80 placeholder-gray-500/80 outline-none text-sm w-full h-full"
               required
@@ -107,7 +187,10 @@ function RegisterForm() {
               />
             </svg>
             <input
+              name="confirmPassword"
               type="password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
               placeholder="Confirm password"
               className="bg-transparent text-gray-500/80 placeholder-gray-500/80 outline-none text-sm w-full h-full"
               required
@@ -115,17 +198,32 @@ function RegisterForm() {
           </div>
 
           <div className="w-full flex items-center gap-2 mt-8 text-gray-500/80">
-            <input className="h-5" type="checkbox" id="terms" required />
+            <input
+              name="agreeToTerms"
+              className="h-5"
+              type="checkbox"
+              id="terms"
+              checked={formData.agreeToTerms}
+              onChange={handleChange}
+              required
+            />
             <label className="text-sm" htmlFor="terms">
               I agree to the terms and privacy policy
             </label>
           </div>
 
+          {message ? (
+            <p className={`text-sm mt-4 ${message.includes("created") ? "text-green-600" : "text-red-500"}`}>
+              {message}
+            </p>
+          ) : null}
+
           <button
             type="submit"
-            className="mt-8 w-full h-11 rounded-full text-white bg-indigo-500 hover:opacity-90 transition-opacity"
+            disabled={isSubmitting}
+            className="mt-8 w-full h-11 rounded-full text-white bg-indigo-500 hover:opacity-90 transition-opacity disabled:opacity-70"
           >
-            Sign up
+            {isSubmitting ? "Creating account..." : "Sign up"}
           </button>
           <p className="text-gray-500/90 text-sm mt-4">
             Already have an account?{" "}
