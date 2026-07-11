@@ -59,7 +59,9 @@ function RegisterForm() {
       return;
     }
 
-    setMessage("Account created! Please check your email to confirm your registration.");
+    setMessage(
+      "Account created! Please check your email to confirm your registration.",
+    );
     setFormData({
       fullName: "",
       email: "",
@@ -213,7 +215,9 @@ function RegisterForm() {
           </div>
 
           {message ? (
-            <p className={`text-sm mt-4 ${message.includes("created") ? "text-green-600" : "text-red-500"}`}>
+            <p
+              className={`text-sm mt-4 ${message.includes("created") ? "text-green-600" : "text-red-500"}`}
+            >
               {message}
             </p>
           ) : null}
