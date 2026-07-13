@@ -5,7 +5,7 @@ import ChatInput from "../components/ChatInput";
 function Home() {
   return (
     <div>
-      <PDFViewer />
+      {/*  <PDFViewer /> */}
 
       <div>
         <ChatInput />
