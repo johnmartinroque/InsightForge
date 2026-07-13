@@ -2,11 +2,17 @@ import React, { useState } from "react";
 
 function ChatInput() {
   const [text, setText] = useState("");
+  const [email, setEmail] = useState("");
   const [status, setStatus] = useState("");
   const [isSending, setIsSending] = useState(false);
 
   async function handleSubmit(event) {
     event.preventDefault();
+
+    if (!email.trim()) {
+      setStatus("Please enter your email before sending.");
+      return;
+    }
 
     if (!text.trim()) {
       setStatus("Please enter a message before sending.");
@@ -18,13 +24,16 @@ function ChatInput() {
 
     try {
       const response = await fetch(
-        "http://localhost:5678/webhook-test/d53e3c7a-9be7-4851-9cc0-75f95ddcf47d",
+        "http://localhost:5678/webhook/d53e3c7a-9be7-4851-9cc0-75f95ddcf47d",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ text: text.trim() }),
+          body: JSON.stringify({
+            email: email.trim(),
+            text: text.trim(),
+          }),
         },
       );
 
@@ -37,6 +46,7 @@ function ChatInput() {
 
       setStatus("Message sent successfully.");
       setText("");
+      setEmail("");
     } catch (error) {
       console.error(error);
       setStatus(`Send failed: ${error.message}`);
@@ -50,9 +60,23 @@ function ChatInput() {
       <form onSubmit={handleSubmit} className="space-y-3">
         <label
           className="block text-sm font-medium text-gray-700"
+          htmlFor="chat-email"
+        >
+          Your email
+        </label>
+        <input
+          id="chat-email"
+          type="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          placeholder="you@example.com"
+          className="w-full rounded-full border border-gray-300 px-4 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+        />
+        <label
+          className="block text-sm font-medium text-gray-700"
           htmlFor="chat-input"
         >
-          Send a message
+          Message
         </label>
         <div className="flex gap-2">
           <input
