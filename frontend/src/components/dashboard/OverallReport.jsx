@@ -197,7 +197,14 @@ export default function OverallReport() {
             <XAxis dataKey="name" />
             <YAxis />
             <Tooltip formatter={(v) => `₱${v.toLocaleString()}`} />
-            <Bar dataKey="revenue" fill="#3b82f6" radius={[8, 8, 0, 0]} />
+            <Bar dataKey="revenue" radius={[8, 8, 0, 0]}>
+              {topProducts.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
+                />
+              ))}
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </div>
