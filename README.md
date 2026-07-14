@@ -259,6 +259,7 @@ Compare gross profit across all months.
 # Demo
 
 <img width="1419" height="525" alt="image" src="https://github.com/user-attachments/assets/73ff8c39-a50c-4bac-a6d7-d74083c7b9d7" />
+<img width="1541" height="482" alt="image" src="https://github.com/user-attachments/assets/2ec8ef59-5376-4312-ae23-e7a1d9cebc9b" />
 
 
 ---
