@@ -1,6 +1,24 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 function Header() {
+  const [dark, setDark] = useState(() => {
+    try {
+      return localStorage.getItem("theme") === "dark";
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (dark) {
+      root.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      root.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [dark]);
   return (
     <div>
       <header>
@@ -17,6 +35,16 @@ function Header() {
               </span>
             </Link>
             <div class="flex items-center lg:order-2">
+              <button
+                type="button"
+                onClick={() => setDark((d) => !d)}
+                className="mr-2 rounded-full p-2 text-sm bg-gray-100 dark:bg-gray-700"
+                aria-label={
+                  dark ? "Switch to light mode" : "Switch to dark mode"
+                }
+              >
+                {dark ? "☀️" : "🌙"}
+              </button>
               <Link
                 to="/login"
                 class="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"

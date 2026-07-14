@@ -1,1 +1,78 @@
 @import "tailwindcss";
+
+/* Basic dark-mode overrides for common utility classes.
+	 These rules are intentionally broad and loaded after Tailwind so
+	 components using plain utility classes get reasonable dark colors.
+*/
+
+html.dark body {
+  background-color: #0b1220;
+  color: #e6eef8;
+}
+
+.dark .bg-white {
+  background-color: #071127 !important;
+}
+
+.dark .bg-gray-100 {
+  background-color: #071127 !important;
+}
+
+.dark .bg-blue-50,
+.dark .bg-green-50,
+.dark .bg-orange-50 {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+}
+
+.dark .text-gray-500,
+.dark .text-gray-700,
+.dark .text-gray-800,
+.dark .text-gray-900 {
+  color: #cbd5e1 !important;
+}
+
+.dark .text-blue-600,
+.dark .text-green-600,
+.dark .text-orange-500 {
+  color: inherit !important;
+}
+
+.dark .border-gray-200,
+.dark .border-gray-300,
+.dark .border-gray-100 {
+  border-color: #1f2937 !important;
+}
+
+.dark .shadow-sm {
+  box-shadow: 0 1px 2px rgba(2, 6, 23, 0.6) !important;
+}
+
+.dark .rounded-xl.bg-white.p-6,
+.dark .rounded-lg.bg-white.p-4,
+.dark .rounded-xl.bg-white.p-6.shadow,
+.dark .rounded-lg.bg-white.p-4.shadow-sm {
+  background-color: #071127 !important;
+  border-color: #172033 !important;
+}
+
+.dark .bg-slate-900 {
+  background-color: #0b1220 !important;
+}
+
+.dark .bg-slate-50 {
+  background-color: #071127 !important;
+}
+
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: #071127 !important;
+  color: #e6eef8 !important;
+  border-color: #1f2937 !important;
+}
+
+.dark a {
+  color: #cbd5e1;
+}
+
+/* end overrides */
