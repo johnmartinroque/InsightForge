@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import {
   ResponsiveContainer,
   LineChart,
@@ -15,8 +14,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import { supabase } from "../lib/supabaseClient";
-import MonthlyReport from "./MonthlyReport";
+import { supabase } from "../../lib/supabaseClient";
 
 const COLORS = [
   "#3b82f6",
@@ -27,7 +25,9 @@ const COLORS = [
   "#06b6d4",
 ];
 
-export default function Dashboard() {
+const MONTHS = ["january", "february", "march"];
+
+export default function OverallReport() {
   const [loading, setLoading] = useState(true);
 
   const [totalRevenue, setTotalRevenue] = useState(0);
@@ -45,10 +45,8 @@ export default function Dashboard() {
   async function fetchData() {
     setLoading(true);
 
-    const months = ["january", "february", "march"];
-
     const responses = await Promise.all(
-      months.map((month) => supabase.from(month).select("*")),
+      MONTHS.map((month) => supabase.from(month).select("*")),
     );
 
     let revenue = 0;
@@ -79,65 +77,63 @@ export default function Dashboard() {
       });
 
       monthly.push({
-        month: months[index].charAt(0).toUpperCase() + months[index].slice(1),
+        month: MONTHS[index].charAt(0).toUpperCase() + MONTHS[index].slice(1),
         revenue: monthRevenue,
       });
     });
-
-    const pie = Object.entries(categoryTotals).map(([name, value]) => ({
-      name,
-      value,
-    }));
-
-    const bars = Object.entries(productTotals)
-      .map(([name, revenue]) => ({
-        name,
-        revenue,
-      }))
-      .sort((a, b) => b.revenue - a.revenue)
-      .slice(0, 5);
 
     setTotalRevenue(revenue);
     setTotalProfit(profit);
     setTotalUnits(units);
 
     setMonthlyRevenue(monthly);
-    setCategoryData(pie);
-    setTopProducts(bars);
+
+    setCategoryData(
+      Object.entries(categoryTotals).map(([name, value]) => ({
+        name,
+        value,
+      })),
+    );
+
+    setTopProducts(
+      Object.entries(productTotals)
+        .map(([name, revenue]) => ({
+          name,
+          revenue,
+        }))
+        .sort((a, b) => b.revenue - a.revenue)
+        .slice(0, 5),
+    );
 
     setLoading(false);
   }
 
-  if (loading) {
+  if (loading)
     return (
-      <div className="flex justify-center items-center h-screen text-xl">
-        Loading Dashboard...
+      <div className="rounded-xl bg-white p-6 shadow">
+        Loading overall report...
       </div>
     );
-  }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-3xl font-bold mb-8">Sales Dashboard</h1>
-
-      {/* KPI CARDS */}
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-xl shadow p-6">
+    <>
+      {/* KPI */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="rounded-xl bg-white p-6 shadow">
           <p className="text-gray-500">Total Revenue</p>
           <h2 className="text-3xl font-bold text-blue-600">
             ₱{totalRevenue.toLocaleString()}
           </h2>
         </div>
 
-        <div className="bg-white rounded-xl shadow p-6">
+        <div className="rounded-xl bg-white p-6 shadow">
           <p className="text-gray-500">Gross Profit</p>
           <h2 className="text-3xl font-bold text-green-600">
             ₱{totalProfit.toLocaleString()}
           </h2>
         </div>
 
-        <div className="bg-white rounded-xl shadow p-6">
+        <div className="rounded-xl bg-white p-6 shadow">
           <p className="text-gray-500">Units Sold</p>
           <h2 className="text-3xl font-bold text-orange-500">
             {totalUnits.toLocaleString()}
@@ -145,13 +141,10 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* CHARTS */}
-
-      <div className="grid md:grid-cols-2 gap-8">
-        {/* Revenue Trend */}
-
-        <div className="bg-white rounded-xl shadow p-6">
-          <h2 className="font-semibold text-lg mb-4">Revenue Trend</h2>
+      {/* Charts */}
+      <div className="mt-8 grid gap-8 md:grid-cols-2">
+        <div className="rounded-xl bg-white p-6 shadow">
+          <h2 className="mb-4 text-lg font-semibold">Revenue Trend</h2>
 
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={monthlyRevenue}>
@@ -170,10 +163,8 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </div>
 
-        {/* Category */}
-
-        <div className="bg-white rounded-xl shadow p-6">
-          <h2 className="font-semibold text-lg mb-4">Revenue by Category</h2>
+        <div className="rounded-xl bg-white p-6 shadow">
+          <h2 className="mb-4 text-lg font-semibold">Revenue by Category</h2>
 
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
@@ -195,29 +186,21 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* BAR CHART */}
-
-      <div className="bg-white rounded-xl shadow p-6 mt-8">
-        <h2 className="font-semibold text-lg mb-4">
+      <div className="mt-8 rounded-xl bg-white p-6 shadow">
+        <h2 className="mb-4 text-lg font-semibold">
           Top 5 Products by Revenue
         </h2>
 
         <ResponsiveContainer width="100%" height={350}>
           <BarChart data={topProducts}>
             <CartesianGrid strokeDasharray="3 3" />
-
             <XAxis dataKey="name" />
-
             <YAxis />
-
             <Tooltip formatter={(v) => `₱${v.toLocaleString()}`} />
-
             <Bar dataKey="revenue" fill="#3b82f6" radius={[8, 8, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>
-
-      <MonthlyReport />
-    </div>
+    </>
   );
 }
