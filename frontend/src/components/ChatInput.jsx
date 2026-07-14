@@ -99,9 +99,18 @@ function ChartCard({ chart }) {
                 key={key}
                 type="monotone"
                 dataKey={key}
-                stroke={SERIES_COLORS[i % SERIES_COLORS.length]}
-                strokeWidth={2}
-                dot={{ r: 3 }}
+                stroke="#ffffff"
+                strokeWidth={3}
+                dot={{
+                  r: 4,
+                  fill: "#ffffff",
+                  stroke: "#ffffff",
+                }}
+                activeDot={{
+                  r: 6,
+                  fill: "#ffffff",
+                  stroke: "#ffffff",
+                }}
               />
             ))}
           </LineChart>
@@ -277,7 +286,7 @@ function ChatInput() {
                   ? "bg-slate-900 text-white"
                   : message.role === "error"
                     ? "border border-red-200 bg-red-50 text-red-700"
-                    : "border border-slate-200 bg-slate-50 text-slate-800"
+                    : "border border-slate-500 bg-slate-900 text-white"
               }`}
             >
               {message.content}

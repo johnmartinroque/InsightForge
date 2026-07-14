@@ -32,7 +32,7 @@ function ChatWidget() {
       <button
         type="button"
         onClick={() => setIsOpen((open) => !open)}
-        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-slate-900 text-white shadow-xl transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400"
+        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-slate-900 text-white shadow-xl ring-2 ring-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400"
         aria-expanded={isOpen}
         aria-label={isOpen ? "Close chat" : "Open chat"}
       >
