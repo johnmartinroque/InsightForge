@@ -89,10 +89,13 @@ export default function OverallReport() {
     setMonthlyRevenue(monthly);
 
     setCategoryData(
-      Object.entries(categoryTotals).map(([name, value]) => ({
-        name,
-        value,
-      })),
+      Object.entries(categoryTotals)
+        .map(([name, value]) => ({
+          name,
+          value,
+        }))
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 5),
     );
 
     setTopProducts(
@@ -181,6 +184,12 @@ export default function OverallReport() {
               </Pie>
 
               <Tooltip formatter={(v) => `₱${v.toLocaleString()}`} />
+              <Legend
+                iconType="square"
+                layout="vertical"
+                verticalAlign="middle"
+                align="right"
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
