@@ -5,6 +5,10 @@ const MONTH_OPTIONS = [
   { value: "january", label: "January" },
   { value: "february", label: "February" },
   { value: "march", label: "March" },
+  { value: "april", label: "April" },
+  { value: "may", label: "May" },
+  { value: "june", label: "June" },
+  { value: "july", label: "July" },
 ];
 
 function formatCurrency(value) {

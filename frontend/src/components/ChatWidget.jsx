@@ -6,13 +6,17 @@ function ChatWidget() {
 
   return (
     <>
-      <div className="fixed inset-0 z-40 flex items-end justify-end pr-24">
+      <div
+        className={`fixed inset-0 z-40 flex items-end justify-end pr-24 transition-all duration-150 ${
+          isOpen ? "pointer-events-auto" : "pointer-events-none"
+        }`}
+      >
         <button
           type="button"
           aria-label="Close chat"
           onClick={() => setIsOpen(false)}
           className={`absolute inset-0 bg-black/20 transition-opacity duration-150 ${
-            isOpen ? "opacity-100" : "pointer-events-none opacity-0"
+            isOpen ? "opacity-100" : "opacity-0"
           }`}
         />
         <div
