@@ -59,7 +59,7 @@ function AngledTick({ x, y, payload }) {
       dy={10}
       textAnchor="end"
       fill="#666"
-      fontSize={10}
+      fontSize={11}
       transform={`rotate(-35, ${x}, ${y})`}
     >
       {payload.value}
@@ -75,13 +75,13 @@ function ChartCard({ chart }) {
   const singleSeries = seriesKeys.length === 1;
 
   return (
-    <div className="w-full max-w-[420px] flex-1 min-w-[300px] rounded-xl border border-slate-200 bg-white p-3">
+    <div className="w-full rounded-xl border border-slate-200 bg-white p-4">
       {chart.title && (
-        <p className="mb-2 text-xs font-semibold text-slate-600">
+        <p className="mb-2 text-sm font-semibold text-slate-600">
           {chart.title}
         </p>
       )}
-      <ResponsiveContainer width="100%" height={280}>
+      <ResponsiveContainer width="100%" height={360}>
         {chart.type === "line" ? (
           <LineChart data={rows} margin={{ bottom: 45 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -91,9 +91,9 @@ function ChartCard({ chart }) {
               height={60}
               tick={<AngledTick />}
             />
-            <YAxis tick={{ fontSize: 11 }} />
+            <YAxis tick={{ fontSize: 12 }} />
             <Tooltip />
-            <Legend wrapperStyle={{ fontSize: 11 }} />
+            <Legend wrapperStyle={{ fontSize: 12 }} />
             {seriesKeys.map((key, i) => (
               <Line
                 key={key}
@@ -111,8 +111,8 @@ function ChartCard({ chart }) {
               data={rows}
               dataKey={seriesKeys[0]}
               nameKey="name"
-              outerRadius={90}
-              label={{ fontSize: 11 }}
+              outerRadius={130}
+              label={{ fontSize: 12 }}
             >
               {rows.map((_, i) => (
                 <Cell
@@ -122,7 +122,7 @@ function ChartCard({ chart }) {
               ))}
             </Pie>
             <Tooltip />
-            <Legend wrapperStyle={{ fontSize: 11 }} />
+            <Legend wrapperStyle={{ fontSize: 12 }} />
           </PieChart>
         ) : (
           <BarChart data={rows} margin={{ bottom: 45 }}>
@@ -133,9 +133,9 @@ function ChartCard({ chart }) {
               height={60}
               tick={<AngledTick />}
             />
-            <YAxis tick={{ fontSize: 11 }} />
+            <YAxis tick={{ fontSize: 12 }} />
             <Tooltip />
-            {!singleSeries && <Legend wrapperStyle={{ fontSize: 11 }} />}
+            {!singleSeries && <Legend wrapperStyle={{ fontSize: 12 }} />}
             {singleSeries ? (
               <Bar dataKey={seriesKeys[0]} radius={[4, 4, 0, 0]}>
                 {rows.map((_, i) => (
@@ -239,7 +239,7 @@ function ChatInput() {
   }
 
   return (
-    <div className="flex h-[700px] w-full max-w-6xl mx-auto flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div className="flex h-[920px] w-full max-w-[1600px] mx-auto flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
       {" "}
       <header className="flex items-center gap-2 border-b border-slate-200 bg-slate-900 px-4 py-3">
         <div className="h-2 w-2 rounded-full bg-emerald-400" />
@@ -257,7 +257,7 @@ function ChatInput() {
           className="w-full max-w-xs rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm text-slate-700 outline-none focus:border-slate-400 disabled:bg-slate-100 disabled:text-slate-400"
         />
       </div>
-      <div className="flex-1 space-y-3 overflow-y-auto px-5 py-4">
+      <div className="flex-1 space-y-4 overflow-y-auto px-6 py-5">
         {messages.length === 0 && (
           <p className="mt-8 text-center text-sm text-slate-400">
             Ask a question about the product data to get started.
@@ -285,7 +285,7 @@ function ChatInput() {
             {message.role === "agent" &&
               message.charts &&
               message.charts.length > 0 && (
-                <div className="mt-2 flex w-full flex-wrap gap-3">
+                <div className="mt-3 flex w-full max-w-[85%] flex-col gap-4">
                   {message.charts.map((chart, chartIndex) => (
                     <ChartCard key={chartIndex} chart={chart} />
                   ))}
@@ -307,7 +307,7 @@ function ChatInput() {
       </div>
       <form
         onSubmit={handleSubmit}
-        className="flex items-center gap-2 border-t border-slate-200 px-3 py-3"
+        className="flex items-center gap-2 border-t border-slate-200 px-4 py-3"
       >
         <input
           type="text"
