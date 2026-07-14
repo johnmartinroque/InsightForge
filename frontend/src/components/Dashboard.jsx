@@ -16,6 +16,7 @@ import {
   Legend,
 } from "recharts";
 import { supabase } from "../lib/supabaseClient";
+import MonthlyReport from "./MonthlyReport";
 
 const COLORS = [
   "#3b82f6",
@@ -215,6 +216,8 @@ export default function Dashboard() {
           </BarChart>
         </ResponsiveContainer>
       </div>
+
+      <MonthlyReport />
     </div>
   );
 }
