@@ -87,12 +87,12 @@ export default function MonthlyReport() {
     [monthReports, selectedMonth],
   );
 
-  const topProfits = selectedReport?.products?.slice(0, 3) ?? [];
+  const topProfits = selectedReport?.products?.slice(0, 5) ?? [];
   const lowestProfits =
     selectedReport?.products
       ?.slice()
       .sort((a, b) => a.profit - b.profit)
-      .slice(0, 3) ?? [];
+      .slice(0, 5) ?? [];
 
   if (loading) {
     return (
@@ -159,7 +159,7 @@ export default function MonthlyReport() {
       <div className="mt-6 grid gap-6 md:grid-cols-2">
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800">
           <h3 className="mb-3 font-semibold text-slate-800 dark:text-slate-200">
-            Top 3 Highest Profit
+            Top 5 Highest Profit
           </h3>
           <ul className="space-y-2">
             {topProfits.map((item, index) => (
@@ -179,9 +179,7 @@ export default function MonthlyReport() {
         </div>
 
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800">
-          <h3 className="mb-3 font-semibold text-slate-800 dark:text-slate-200">
-            Top 3 Lowest Profit
-          </h3>
+          <h3 className="mb-3 font-semibold ">Top 5 Lowest Profit</h3>
           <ul className="space-y-2">
             {lowestProfits.map((item, index) => (
               <li
