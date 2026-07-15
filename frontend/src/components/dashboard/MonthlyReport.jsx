@@ -87,12 +87,12 @@ export default function MonthlyReport() {
     [monthReports, selectedMonth],
   );
 
-  const topProfits = selectedReport?.products?.slice(0, 5) ?? [];
+  const topProfits = selectedReport?.products?.slice(0, 3) ?? [];
   const lowestProfits =
     selectedReport?.products
       ?.slice()
       .sort((a, b) => a.profit - b.profit)
-      .slice(0, 5) ?? [];
+      .slice(0, 3) ?? [];
 
   if (loading) {
     return (
@@ -119,7 +119,7 @@ export default function MonthlyReport() {
         <select
           value={selectedMonth}
           onChange={(event) => setSelectedMonth(event.target.value)}
-          className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none"
+          className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-gray-400 focus:outline-none dark:focus:border-blue-500"
         >
           {monthReports.map((report) => (
             <option key={report.value} value={report.value}>
@@ -130,8 +130,8 @@ export default function MonthlyReport() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800">
-          <p className="text-sm text-slate-600 dark:text-slate-300">Revenue</p>
+        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700">
+          <p className="text-sm text-slate-600 dark:text-slate-00">Revenue</p>
           <p className="text-xl font-semibold text-slate-900 dark:text-slate-100">
             {formatCurrency(selectedReport.revenue)}
           </p>
@@ -159,7 +159,7 @@ export default function MonthlyReport() {
       <div className="mt-6 grid gap-6 md:grid-cols-2">
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800">
           <h3 className="mb-3 font-semibold text-slate-800 dark:text-slate-200">
-            Top 5 Highest Profit
+            Top 3 Highest Profit
           </h3>
           <ul className="space-y-2">
             {topProfits.map((item, index) => (
@@ -179,7 +179,9 @@ export default function MonthlyReport() {
         </div>
 
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800">
-          <h3 className="mb-3 font-semibold ">Top 5 Lowest Profit</h3>
+          <h3 className="mb-3 font-semibold text-slate-800 dark:text-slate-200">
+            Top 3 Lowest Profit
+          </h3>
           <ul className="space-y-2">
             {lowestProfits.map((item, index) => (
               <li
