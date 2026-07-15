@@ -25,7 +25,7 @@ const COLORS = [
   "#06b6d4",
 ];
 
-const MONTHS = ["january", "february", "march"];
+const MONTHS = ["january", "february", "march", "april", "may", "june", "july"];
 
 export default function OverallReport() {
   const [loading, setLoading] = useState(true);
