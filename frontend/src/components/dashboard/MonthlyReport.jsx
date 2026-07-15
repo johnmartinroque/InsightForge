@@ -131,26 +131,22 @@ export default function MonthlyReport() {
 
       <div className="grid gap-4 md:grid-cols-3">
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700">
-          <p className="text-sm text-slate-600 dark:text-slate-00">Revenue</p>
-          <p className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+          <p className="text-sm">Revenue</p>
+          <p className="text-xl font-semibold">
             {formatCurrency(selectedReport.revenue)}
           </p>
         </div>
 
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800">
-          <p className="text-sm text-slate-600 dark:text-slate-300">
-            Gross Profit
-          </p>
-          <p className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700">
+          <p className="text-sm ">Gross Profit</p>
+          <p className="text-xl font-semibold">
             {formatCurrency(selectedReport.profit)}
           </p>
         </div>
 
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800">
-          <p className="text-sm text-slate-600 dark:text-slate-300">
-            Units Sold
-          </p>
-          <p className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 ">
+          <p className="text-sm">Units Sold</p>
+          <p className="text-xl font-semibold">
             {selectedReport.units.toLocaleString()}
           </p>
         </div>
