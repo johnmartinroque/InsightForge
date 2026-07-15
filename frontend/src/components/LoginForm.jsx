@@ -1,11 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function LoginForm() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Replace this block with your real auth call. Once you have a
+    // successful response, save whatever user object the API returns.
+    const userInfo = { email };
+
+    localStorage.setItem("userInfo", JSON.stringify(userInfo));
+    window.dispatchEvent(new Event("authChange"));
+    navigate("/");
+  };
+
   return (
     <div>
       <div class="flex h-[700px] w-full">
         <div class="w-full flex flex-col items-center justify-center">
-          <form class="md:w-96 w-80 flex flex-col items-center justify-center">
+          <form
+            onSubmit={handleSubmit}
+            class="md:w-96 w-80 flex flex-col items-center justify-center"
+          >
             <h2 class="text-4xl text-gray-900 font-medium">Sign in</h2>
             <p class="text-sm text-gray-500/90 mt-3">
               Welcome back! Please sign in to continue
@@ -47,6 +67,8 @@ function LoginForm() {
               <input
                 type="email"
                 placeholder="Email id"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 class="bg-transparent text-gray-500/80 placeholder-gray-500/80 outline-none text-sm w-full h-full"
                 required
               />
@@ -68,6 +90,8 @@ function LoginForm() {
               <input
                 type="password"
                 placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 class="bg-transparent text-gray-500/80 placeholder-gray-500/80 outline-none text-sm w-full h-full"
                 required
               />

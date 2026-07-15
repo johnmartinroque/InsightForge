@@ -1,7 +1,7 @@
 import React from "react";
 
 function LandingScreen() {
-  return <div>LandingScreen Branch 2 Testing</div>;
+  return <div>LandingScreen</div>;
 }
 
 export default LandingScreen;
