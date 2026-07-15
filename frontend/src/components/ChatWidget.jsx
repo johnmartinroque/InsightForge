@@ -20,7 +20,7 @@ function ChatWidget() {
           }`}
         />
         <div
-          className={`relative m-6 w-[min(calc(100vw-3rem),1600px)] max-w-[1600px] h-[920px] transition-all duration-150 ${
+          className={`relative m-6 w-[calc(100vw-3rem)] max-w-[2200px] h-[calc(100vh-3rem)] max-h-[1300px] transition-all duration-150 ${
             isOpen
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-6 pointer-events-none"
