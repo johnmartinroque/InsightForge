@@ -107,7 +107,7 @@ export default function MonthlyReport() {
   }
 
   return (
-    <div className="mt-8 rounded-xl border border-gray-200 bg-white p-6 shadow">
+    <div className="mt-8 rounded-xl border border-gray-200 bg-white p-6 shadow ">
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h2 className="text-lg font-semibold">Monthly Report</h2>
@@ -130,21 +130,21 @@ export default function MonthlyReport() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700">
+        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
           <p className="text-sm">Revenue</p>
           <p className="text-xl font-semibold">
             {formatCurrency(selectedReport.revenue)}
           </p>
         </div>
 
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700">
+        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 ">
           <p className="text-sm ">Gross Profit</p>
           <p className="text-xl font-semibold">
             {formatCurrency(selectedReport.profit)}
           </p>
         </div>
 
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 ">
+        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 ">
           <p className="text-sm">Units Sold</p>
           <p className="text-xl font-semibold">
             {selectedReport.units.toLocaleString()}
@@ -153,20 +153,16 @@ export default function MonthlyReport() {
       </div>
 
       <div className="mt-6 grid gap-6 md:grid-cols-2">
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800">
-          <h3 className="mb-3 font-semibold text-slate-800 dark:text-slate-200">
-            Top 3 Highest Profit
-          </h3>
+        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 ">
+          <h3 className="mb-3 font-semibold">Top 3 Highest Profit</h3>
           <ul className="space-y-2">
             {topProfits.map((item, index) => (
               <li
                 key={`${item.name}-${index}`}
-                className="flex items-center justify-between rounded bg-white px-3 py-2 text-sm shadow-sm dark:bg-slate-900"
+                className="flex items-center justify-between rounded bg-white px-3 py-2 text-sm shadow-sm"
               >
-                <span className="font-medium text-gray-700 dark:text-slate-200">
-                  {item.name}
-                </span>
-                <span className="font-semibold text-slate-700 dark:text-slate-100">
+                <span className="font-medium text-gray-700 ">{item.name}</span>
+                <span className="font-semibold ">
                   {formatCurrency(item.profit)}
                 </span>
               </li>
@@ -174,20 +170,16 @@ export default function MonthlyReport() {
           </ul>
         </div>
 
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800">
-          <h3 className="mb-3 font-semibold text-slate-800 dark:text-slate-200">
-            Top 3 Lowest Profit
-          </h3>
+        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4  ">
+          <h3 className="mb-3 font-semibold">Top 3 Lowest Profit</h3>
           <ul className="space-y-2">
             {lowestProfits.map((item, index) => (
               <li
                 key={`${item.name}-${index}`}
-                className="flex items-center justify-between rounded bg-white px-3 py-2 text-sm shadow-sm dark:bg-slate-900"
+                className="flex items-center justify-between rounded bg-white px-3 py-2 text-sm shadow-sm"
               >
-                <span className="font-medium text-gray-700 dark:text-slate-200">
-                  {item.name}
-                </span>
-                <span className="font-semibold text-slate-700 dark:text-slate-100">
+                <span className="font-medium ">{item.name}</span>
+                <span className="font-semibold">
                   {formatCurrency(item.profit)}
                 </span>
               </li>
