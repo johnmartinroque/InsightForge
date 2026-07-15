@@ -87,12 +87,12 @@ export default function MonthlyReport() {
     [monthReports, selectedMonth],
   );
 
-  const topProfits = selectedReport?.products?.slice(0, 3) ?? [];
+  const topProfits = selectedReport?.products?.slice(0, 5) ?? [];
   const lowestProfits =
     selectedReport?.products
       ?.slice()
       .sort((a, b) => a.profit - b.profit)
-      .slice(0, 3) ?? [];
+      .slice(0, 5) ?? [];
 
   if (loading) {
     return (
