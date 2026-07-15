@@ -16,8 +16,8 @@ import {
 } from "recharts";
 
 // Palette used for per-category coloring (bars within a single-series chart,
-// and pie slices). Cycles if there are more categories than colors.
-const CATEGORY_COLORS = [
+// and pie slices) in LIGHT mode. Cycles if there are more categories than colors.
+const CATEGORY_COLORS_LIGHT = [
   "#0ea5e9",
   "#f59e0b",
   "#10b981",
@@ -28,8 +28,57 @@ const CATEGORY_COLORS = [
   "#f97316",
 ];
 
-// Palette used when a chart has multiple series (each series gets one color).
-const SERIES_COLORS = ["#0f172a", "#0ea5e9", "#f59e0b", "#10b981", "#ef4444"];
+// Brighter / higher-contrast variant for DARK mode so slices/bars pop
+// against a dark background instead of looking muddy.
+const CATEGORY_COLORS_DARK = [
+  "#38bdf8",
+  "#fbbf24",
+  "#34d399",
+  "#f87171",
+  "#a78bfa",
+  "#f472b6",
+  "#2dd4bf",
+  "#fb923c",
+];
+
+// Palette used when a chart has multiple series (each series gets one color) in LIGHT mode.
+const SERIES_COLORS_LIGHT = [
+  "#0f172a",
+  "#0ea5e9",
+  "#f59e0b",
+  "#10b981",
+  "#ef4444",
+];
+
+// Dark-mode variant: swaps the near-black first color (invisible on dark bg)
+// for a bright white/cyan, and brightens the rest.
+const SERIES_COLORS_DARK = [
+  "#f8fafc",
+  "#38bdf8",
+  "#fbbf24",
+  "#34d399",
+  "#f87171",
+];
+
+// Hook: tracks whether the system is in dark mode, live-updating on change.
+function useIsDarkMode() {
+  const [isDark, setIsDark] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches,
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mql = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = (event) => setIsDark(event.matches);
+    mql.addEventListener?.("change", handler);
+    return () => mql.removeEventListener?.("change", handler);
+  }, []);
+
+  return isDark;
+}
 
 // Turns { labels: [...], datasets: [{ label, data }] } into
 // [{ name: label, [datasetLabel]: value, ... }] for recharts.
@@ -51,14 +100,14 @@ function toChartRows(chart) {
 }
 
 // Angled tick so long product names don't get dropped for overlapping.
-function AngledTick({ x, y, payload }) {
+function AngledTick({ x, y, payload, fill }) {
   return (
     <text
       x={x}
       y={y}
       dy={10}
       textAnchor="end"
-      fill="#666"
+      fill={fill}
       fontSize={11}
       transform={`rotate(-35, ${x}, ${y})`}
     >
@@ -67,33 +116,55 @@ function AngledTick({ x, y, payload }) {
   );
 }
 
-function ChartCard({ chart }) {
+function ChartCard({ chart, isDark }) {
   if (!chart || !chart.type) return null;
   const rows = toChartRows(chart);
   if (rows.length === 0) return null;
   const seriesKeys = (chart.datasets || []).map((ds) => ds.label);
   const singleSeries = seriesKeys.length === 1;
 
+  const CATEGORY_COLORS = isDark ? CATEGORY_COLORS_DARK : CATEGORY_COLORS_LIGHT;
+  const SERIES_COLORS = isDark ? SERIES_COLORS_DARK : SERIES_COLORS_LIGHT;
+  const gridStroke = isDark ? "#334155" : "#e2e8f0";
+  const tickFill = isDark ? "#cbd5e1" : "#666";
+  const tooltipStyle = isDark
+    ? {
+        backgroundColor: "#1e293b",
+        border: "1px solid #334155",
+        color: "#f1f5f9",
+        fontSize: 12,
+      }
+    : undefined;
+  const legendStyle = { fontSize: 12, color: isDark ? "#cbd5e1" : undefined };
+
   return (
-    <div className="w-full rounded-xl border border-slate-200 bg-white p-4">
+    <div
+      className={`w-full rounded-xl border p-4 ${
+        isDark ? "border-slate-700 bg-slate-800" : "border-slate-200 bg-white"
+      }`}
+    >
       {chart.title && (
-        <p className="mb-2 text-sm font-semibold text-slate-600">
+        <p
+          className={`mb-2 text-sm font-semibold ${
+            isDark ? "text-slate-300" : "text-slate-600"
+          }`}
+        >
           {chart.title}
         </p>
       )}
       <ResponsiveContainer width="100%" height={360}>
         {chart.type === "line" ? (
           <LineChart data={rows} margin={{ bottom: 45 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+            <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
             <XAxis
               dataKey="name"
               interval={0}
               height={60}
-              tick={<AngledTick />}
+              tick={<AngledTick fill={tickFill} />}
             />
-            <YAxis tick={{ fontSize: 12 }} />
-            <Tooltip />
-            <Legend wrapperStyle={{ fontSize: 12 }} />
+            <YAxis tick={{ fontSize: 12, fill: tickFill }} />
+            <Tooltip contentStyle={tooltipStyle} />
+            <Legend wrapperStyle={legendStyle} />
             {seriesKeys.map((key, i) => (
               <Line
                 key={key}
@@ -112,7 +183,7 @@ function ChartCard({ chart }) {
               dataKey={seriesKeys[0]}
               nameKey="name"
               outerRadius={130}
-              label={{ fontSize: 12 }}
+              label={{ fontSize: 12, fill: tickFill }}
             >
               {rows.map((_, i) => (
                 <Cell
@@ -121,21 +192,21 @@ function ChartCard({ chart }) {
                 />
               ))}
             </Pie>
-            <Tooltip />
-            <Legend wrapperStyle={{ fontSize: 12 }} />
+            <Tooltip contentStyle={tooltipStyle} />
+            <Legend wrapperStyle={legendStyle} />
           </PieChart>
         ) : (
           <BarChart data={rows} margin={{ bottom: 45 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+            <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
             <XAxis
               dataKey="name"
               interval={0}
               height={60}
-              tick={<AngledTick />}
+              tick={<AngledTick fill={tickFill} />}
             />
-            <YAxis tick={{ fontSize: 12 }} />
-            <Tooltip />
-            {!singleSeries && <Legend wrapperStyle={{ fontSize: 12 }} />}
+            <YAxis tick={{ fontSize: 12, fill: tickFill }} />
+            <Tooltip contentStyle={tooltipStyle} />
+            {!singleSeries && <Legend wrapperStyle={legendStyle} />}
             {singleSeries ? (
               <Bar dataKey={seriesKeys[0]} radius={[4, 4, 0, 0]}>
                 {rows.map((_, i) => (
@@ -163,6 +234,7 @@ function ChartCard({ chart }) {
 }
 
 function ChatInput() {
+  const isDark = useIsDarkMode();
   const [email, setEmail] = useState("");
   const [text, setText] = useState("");
   const [messages, setMessages] = useState([]); // { role: 'user' | 'agent' | 'error', content: string, charts?: object[] }
@@ -277,7 +349,7 @@ function ChatInput() {
                   ? "bg-slate-900 text-white"
                   : message.role === "error"
                     ? "border border-red-200 bg-red-50 text-red-700"
-                    : "border border-slate-200 bg-slate-50 text-slate-800"
+                    : "border border-slate-200 bg-slate-50 "
               }`}
             >
               {message.content}
@@ -287,7 +359,7 @@ function ChatInput() {
               message.charts.length > 0 && (
                 <div className="mt-3 flex w-full max-w-[85%] flex-col gap-4">
                   {message.charts.map((chart, chartIndex) => (
-                    <ChartCard key={chartIndex} chart={chart} />
+                    <ChartCard key={chartIndex} chart={chart} isDark={isDark} />
                   ))}
                 </div>
               )}
