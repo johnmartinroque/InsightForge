@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 
 function RegisterForm() {
@@ -11,6 +12,7 @@ function RegisterForm() {
   });
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   function handleChange(event) {
     const { name, value, type, checked } = event.target;
@@ -59,9 +61,15 @@ function RegisterForm() {
       return;
     }
 
-    setMessage(
-      "Account created! Please check your email to confirm your registration.",
-    );
+    const userInfo = {
+      email: formData.email.trim(),
+      fullName: formData.fullName.trim(),
+    };
+
+    localStorage.setItem("userInfo", JSON.stringify(userInfo));
+    window.dispatchEvent(new Event("authChange"));
+    navigate("/");
+
     setFormData({
       fullName: "",
       email: "",
