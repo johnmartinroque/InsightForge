@@ -239,7 +239,6 @@ function ChatInput() {
   const [text, setText] = useState("");
   const [messages, setMessages] = useState([]); // { role: 'user' | 'agent' | 'error', content: string, charts?: object[] }
   const [isSending, setIsSending] = useState(false);
-  const [emailLocked, setEmailLocked] = useState(false);
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -249,14 +248,6 @@ function ChatInput() {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    if (!email.trim()) {
-      setMessages((prev) => [
-        ...prev,
-        { role: "error", content: "Enter your email before sending." },
-      ]);
-      return;
-    }
-
     if (!text.trim()) {
       return;
     }
@@ -265,7 +256,6 @@ function ChatInput() {
     setMessages((prev) => [...prev, { role: "user", content: outgoing }]);
     setText("");
     setIsSending(true);
-    setEmailLocked(true);
 
     try {
       const response = await fetch(import.meta.env.VITE_N8N_WEBHOOK_URL, {
@@ -319,11 +309,10 @@ function ChatInput() {
           Data Analysis Assistant
         </h1>
       </header>
-      <div className="border-b border-slate-200 px-4 py-2">
+      <div className="hidden border-b border-slate-200 px-4 py-2">
         <input
           type="email"
           value={email}
-          disabled={emailLocked}
           onChange={(event) => setEmail(event.target.value)}
           placeholder="you@example.com"
           className="w-full max-w-xs rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm text-slate-700 outline-none focus:border-slate-400 disabled:bg-slate-100 disabled:text-slate-400"
