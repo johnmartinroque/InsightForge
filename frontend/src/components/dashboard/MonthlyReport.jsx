@@ -107,7 +107,7 @@ export default function MonthlyReport() {
   }
 
   return (
-    <div className="mt-8 rounded-xl border border-gray-200 bg-white p-6 shadow ">
+    <div className="mt-8 rounded-xl border border-gray-200 bg-white p-6 shadow outline outline-1 outline-white/20 ">
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h2 className="text-lg font-semibold">Monthly Report</h2>
@@ -178,7 +178,7 @@ export default function MonthlyReport() {
                 key={`${item.name}-${index}`}
                 className="flex items-center justify-between rounded bg-white px-3 py-2 text-sm shadow-sm"
               >
-                <span className="font-medium text-gray-700">{item.name}</span>
+                <span className="font-medium ">{item.name}</span>
                 <span className="font-semibold">
                   {formatCurrency(item.profit)}
                 </span>

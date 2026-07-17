@@ -121,22 +121,22 @@ export default function OverallReport() {
   return (
     <>
       {/* KPI */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <div className="rounded-xl bg-white p-6 shadow">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3 ">
+        <div className="rounded-xl bg-white p-6 shadow outline outline-1 outline-white/20">
           <p className="text-gray-500">Total Revenue</p>
           <h2 className="text-3xl font-bold text-blue-600">
             ₱{totalRevenue.toLocaleString()}
           </h2>
         </div>
 
-        <div className="rounded-xl bg-white p-6 shadow">
+        <div className="rounded-xl bg-white p-6 shadow outline outline-1 outline-white/20">
           <p className="text-gray-500">Gross Profit</p>
           <h2 className="text-3xl font-bold text-green-600">
             ₱{totalProfit.toLocaleString()}
           </h2>
         </div>
 
-        <div className="rounded-xl bg-white p-6 shadow">
+        <div className="rounded-xl bg-white p-6 shadow outline outline-1 outline-white/20">
           <p className="text-gray-500">Units Sold</p>
           <h2 className="text-3xl font-bold text-orange-500">
             {totalUnits.toLocaleString()}
@@ -146,7 +146,7 @@ export default function OverallReport() {
 
       {/* Charts */}
       <div className="mt-8 grid gap-8 md:grid-cols-2">
-        <div className="rounded-xl bg-white p-6 shadow">
+        <div className="rounded-xl bg-white p-6 shadow outline outline-1 outline-white/20">
           <h2 className="mb-4 text-lg font-semibold">Revenue Trend</h2>
 
           <ResponsiveContainer width="100%" height={300}>
@@ -166,7 +166,7 @@ export default function OverallReport() {
           </ResponsiveContainer>
         </div>
 
-        <div className="rounded-xl bg-white p-6 shadow">
+        <div className="rounded-xl bg-white p-6 shadow outline outline-1 outline-white/20">
           <h2 className="mb-4 text-lg font-semibold">Revenue by Category</h2>
 
           <ResponsiveContainer width="100%" height={300}>
@@ -195,7 +195,7 @@ export default function OverallReport() {
         </div>
       </div>
 
-      <div className="mt-8 rounded-xl bg-white p-6 shadow">
+      <div className="mt-8 rounded-xl bg-white p-6 shadow outline outline-1 outline-white/20 ">
         <h2 className="mb-4 text-lg font-semibold">
           Top 5 Products by Revenue
         </h2>
