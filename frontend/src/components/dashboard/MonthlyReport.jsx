@@ -178,7 +178,7 @@ export default function MonthlyReport() {
                 key={`${item.name}-${index}`}
                 className="flex items-center justify-between rounded bg-white px-3 py-2 text-sm shadow-sm"
               >
-                <span className="font-medium ">{item.name}</span>
+                <span className="font-medium text-gray-700">{item.name}</span>
                 <span className="font-semibold">
                   {formatCurrency(item.profit)}
                 </span>
