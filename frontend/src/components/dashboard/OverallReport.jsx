@@ -1,29 +1,9 @@
 import { useEffect, useState } from "react";
-import {
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-} from "recharts";
 import { supabase } from "../../lib/supabaseClient";
-
-const COLORS = [
-  "#3b82f6",
-  "#10b981",
-  "#f59e0b",
-  "#ef4444",
-  "#8b5cf6",
-  "#06b6d4",
-];
+import KPI from "./overall/KPI";
+import RevenueTrend from "./overall/RevenueTrend";
+import RevenueByCategory from "./overall/RevenueByCategory";
+import TopProductByRevenue from "./overall/TopProductByRevenue";
 
 const MONTHS = ["january", "february", "march", "april", "may", "june", "july"];
 
@@ -120,103 +100,18 @@ export default function OverallReport() {
 
   return (
     <>
-      {/* KPI */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3 ">
-        <div className="rounded-xl bg-white p-6 shadow outline outline-1 outline-white/20">
-          <p className="text-gray-500">Total Revenue</p>
-          <h2 className="text-3xl font-bold text-blue-600">
-            ₱{totalRevenue.toLocaleString()}
-          </h2>
-        </div>
+      <KPI
+        totalRevenue={totalRevenue}
+        totalProfit={totalProfit}
+        totalUnits={totalUnits}
+      />
 
-        <div className="rounded-xl bg-white p-6 shadow outline outline-1 outline-white/20">
-          <p className="text-gray-500">Gross Profit</p>
-          <h2 className="text-3xl font-bold text-green-600">
-            ₱{totalProfit.toLocaleString()}
-          </h2>
-        </div>
-
-        <div className="rounded-xl bg-white p-6 shadow outline outline-1 outline-white/20">
-          <p className="text-gray-500">Units Sold</p>
-          <h2 className="text-3xl font-bold text-orange-500">
-            {totalUnits.toLocaleString()}
-          </h2>
-        </div>
-      </div>
-
-      {/* Charts */}
       <div className="mt-8 grid gap-8 md:grid-cols-2">
-        <div className="rounded-xl bg-white p-6 shadow outline outline-1 outline-white/20">
-          <h2 className="mb-4 text-lg font-semibold">Revenue Trend</h2>
-
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={monthlyRevenue}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip formatter={(v) => `₱${v.toLocaleString()}`} />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="revenue"
-                stroke="#2563eb"
-                strokeWidth={3}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className="rounded-xl bg-white p-6 shadow outline outline-1 outline-white/20">
-          <h2 className="mb-4 text-lg font-semibold">Revenue by Category</h2>
-
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={categoryData}
-                dataKey="value"
-                nameKey="name"
-                outerRadius={100}
-                label
-              >
-                {categoryData.map((entry, index) => (
-                  <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-
-              <Tooltip formatter={(v) => `₱${v.toLocaleString()}`} />
-              <Legend
-                iconType="square"
-                layout="vertical"
-                verticalAlign="middle"
-                align="right"
-              />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
+        <RevenueTrend monthlyRevenue={monthlyRevenue} />
+        <RevenueByCategory categoryData={categoryData} />
       </div>
 
-      <div className="mt-8 rounded-xl bg-white p-6 shadow outline outline-1 outline-white/20 ">
-        <h2 className="mb-4 text-lg font-semibold">
-          Top 5 Products by Revenue
-        </h2>
-
-        <ResponsiveContainer width="100%" height={350}>
-          <BarChart data={topProducts}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip formatter={(v) => `₱${v.toLocaleString()}`} />
-            <Bar dataKey="revenue" radius={[8, 8, 0, 0]}>
-              {topProducts.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      <TopProductByRevenue topProducts={topProducts} />
     </>
   );
 }
