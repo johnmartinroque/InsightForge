@@ -1,19 +1,22 @@
 import React from "react";
+import landingPic from "../assets/landingpic.jpg";
 
 function LandingScreen() {
   return (
-    <div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-2 gap-y-3">
-        <div className="bg-red-500 rounded-lg shadow-xl min-h-[50px]"></div>
-        <div className="bg-blue-500 rounded-lg shadow-xl min-h-[50px] col-span-3"></div>
-        <div className="bg-green-500 rounded-lg shadow-xl min-h-[50px]"></div>
-        <div className="bg-yellow-500 rounded-lg shadow-xl min-h-[50px]"></div>
-        <div className="bg-purple-500 rounded-lg shadow-xl min-h-[50px]"></div>
-        <div className="bg-pink-500 rounded-lg shadow-xl min-h-[50px]"></div>
-        <div className="bg-indigo-500 rounded-lg shadow-xl min-h-[50px]"></div>
-        <div className="bg-teal-500 rounded-lg shadow-xl min-h-[50px]"></div>
-        <div className="bg-orange-500 rounded-lg shadow-xl min-h-[50px]"></div>
-        <div className="bg-cyan-500 rounded-lg shadow-xl min-h-[50px]"></div>
+    <div
+      role="banner"
+      className="relative h-screen flex flex-col justify-center items-center text-center text-white px-4 bg-cover bg-center"
+      style={{ backgroundImage: `url(${landingPic})` }}
+    >
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-black/45" />
+
+      {/* Content */}
+      <div className="relative z-10">
+        <h1 className="text-8xl font-bold m-0 tracking-wide">Insight Forge</h1>
+        <p className="text-2xl mt-3 max-w-[700px]">
+          Data-driven insights for smarter decisions.
+        </p>
       </div>
     </div>
   );
