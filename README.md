@@ -218,52 +218,6 @@ What is the average gross margin for July?
 Which month performed the best overall?
 ```
 
----
-
-## 🖥️ Frontend Structure
-
-```
-src/
-├── components/
-│   ├── Dashboard.jsx              # Overall + Monthly report layout
-│   ├── MonthlyReport.jsx          # Month selector, per-month KPIs, top/bottom profit
-│   ├── ChatWidget.jsx             # Floating chat launcher
-│   ├── ChatInput.jsx              # Chat UI + dynamic Recharts rendering
-│   ├── LoginForm.jsx / RegisterForm.jsx   # Supabase Auth forms
-│   └── overall/
-│       ├── KPI.jsx
-│       ├── RevenueTrend.jsx
-│       ├── RevenueByCategory.jsx
-│       └── TopProductByRevenue.jsx
-├── lib/supabaseClient.js
-└── index.css
-```
-
----
-
-## ⚙️ Getting Started
-
-### Prerequisites
-- Node.js 18+
-- Supabase project with `january`–`july` tables
-- n8n instance with both AI Agent workflows imported and credentialed (Google Gemini, Google Sheets, Google Drive, SMTP, PDF.co)
-
-### Environment Variables
-
-```env
-VITE_SUPABASE_URL=your-supabase-project-url
-VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
-VITE_N8N_WEBHOOK_URL=your-n8n-chat-webhook-url
-```
-
-### Run locally
-
-```bash
-npm install
-npm run dev
-```
-
----
 
 ## License
 
