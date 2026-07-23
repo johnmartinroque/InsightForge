@@ -218,4 +218,16 @@ What is the average gross margin for July?
 Which month performed the best overall?
 ```
 
+## 📸 Screenshots
 
+### Dashboard — Overall Report
+<img width="1400" alt="Overall Report" src="PASTE_URL_HERE" />
+
+### Monthly Report
+<img width="1400" alt="Monthly Report" src="PASTE_URL_HERE" />
+
+### AI Chat Assistant
+<img width="1400" alt="Chat Assistant" src="PASTE_URL_HERE" />
+
+### n8n AI Agent Workflow — Monthly Report Automation
+<img width="1400" alt="n8n Workflow" src="PASTE_URL_HERE" />
