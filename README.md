@@ -219,6 +219,3 @@ Which month performed the best overall?
 ```
 
 
-## License
-
-MIT
