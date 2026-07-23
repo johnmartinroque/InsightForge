@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
+import MonthlyReportHeader from "./monthly/MonthlyReportHeader";
+import MonthlySummaryCards from "./monthly/MonthlySummaryCards";
+import ProfitList from "./monthly/ProfitList";
 
 const MONTH_OPTIONS = [
   { value: "january", label: "January" },
@@ -108,84 +111,29 @@ export default function MonthlyReport() {
 
   return (
     <div className="mt-8 rounded-xl border border-gray-200 bg-white p-6 shadow outline outline-1 outline-white/20 ">
-      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h2 className="text-lg font-semibold">Monthly Report</h2>
-          <p className="text-sm text-gray-500">
-            Review month-by-month performance and highlight profit leaders.
-          </p>
-        </div>
+      <MonthlyReportHeader
+        selectedMonth={selectedMonth}
+        monthReports={monthReports}
+        onMonthChange={setSelectedMonth}
+      />
 
-        <select
-          value={selectedMonth}
-          onChange={(event) => setSelectedMonth(event.target.value)}
-          className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-gray-400 focus:outline-none dark:focus:border-blue-500"
-        >
-          {monthReports.map((report) => (
-            <option key={report.value} value={report.value}>
-              {report.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-          <p className="text-sm">Revenue</p>
-          <p className="text-xl font-semibold">
-            {formatCurrency(selectedReport.revenue)}
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 ">
-          <p className="text-sm ">Gross Profit</p>
-          <p className="text-xl font-semibold">
-            {formatCurrency(selectedReport.profit)}
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 ">
-          <p className="text-sm">Units Sold</p>
-          <p className="text-xl font-semibold">
-            {selectedReport.units.toLocaleString()}
-          </p>
-        </div>
-      </div>
+      <MonthlySummaryCards
+        selectedReport={selectedReport}
+        formatCurrency={formatCurrency}
+      />
 
       <div className="mt-6 grid gap-6 md:grid-cols-2">
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 ">
-          <h3 className="mb-3 font-semibold">Top 3 Highest Profit</h3>
-          <ul className="space-y-2">
-            {topProfits.map((item, index) => (
-              <li
-                key={`${item.name}-${index}`}
-                className="flex items-center justify-between rounded bg-white px-3 py-2 text-sm shadow-sm"
-              >
-                <span className="font-medium text-gray-700 ">{item.name}</span>
-                <span className="font-semibold ">
-                  {formatCurrency(item.profit)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <ProfitList
+          title="Top 3 Highest Profit"
+          items={topProfits}
+          formatCurrency={formatCurrency}
+        />
 
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-4  ">
-          <h3 className="mb-3 font-semibold">Top 3 Lowest Profit</h3>
-          <ul className="space-y-2">
-            {lowestProfits.map((item, index) => (
-              <li
-                key={`${item.name}-${index}`}
-                className="flex items-center justify-between rounded bg-white px-3 py-2 text-sm shadow-sm"
-              >
-                <span className="font-medium ">{item.name}</span>
-                <span className="font-semibold">
-                  {formatCurrency(item.profit)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <ProfitList
+          title="Top 3 Lowest Profit"
+          items={lowestProfits}
+          formatCurrency={formatCurrency}
+        />
       </div>
     </div>
   );
