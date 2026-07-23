@@ -1,4 +1,4 @@
-# 📊 AI Data Analysis Assistant
+# 📊 Insight Forge
 
 An AI-powered data analysis assistant that enables users to ask natural language questions about sales and inventory data. The application uses a React frontend, an n8n AI workflow, Google Gemini, and Google Sheets to provide business insights with automatically generated charts.
 
