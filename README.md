@@ -1,173 +1,174 @@
-# 📊 AI Data Analysis Assistant
+# 📊 Insight Forge
 
-An AI-powered data analysis assistant that enables users to ask natural language questions about sales and inventory data. The application uses a React frontend, an n8n AI workflow, Google Gemini, and Google Sheets to provide business insights with automatically generated charts.
+A full-stack sales and inventory analytics platform combining a **React dashboard**, a **Supabase** data layer, and **two n8n AI Agent workflows** powered by Google Gemini — one that answers natural-language questions in a live chat widget, and one that autonomously generates and emails a formatted monthly PDF report.
 
 ---
 
 ## 🚀 Features
 
-- 💬 Chat interface for asking questions about sales data
-- 📈 Automatic chart generation (Bar, Line, Pie)
-- 🧠 AI-powered data analysis using Google Gemini
-- 📊 Reads live data directly from Google Sheets
-- 🗓️ Supports monthly sales analysis (January – July)
-- 💾 Conversation memory using email-based sessions
-- 🔗 Webhook integration between React and n8n
-- 📱 Responsive modern UI built with React & Tailwind CSS
+- 📈 **Overall Report** — aggregated KPIs, monthly revenue trend, top-5 revenue-by-category, and top-5 products by revenue, computed live across seven monthly Supabase tables
+- 🗓️ **Monthly Report** — month picker with per-month KPIs and top/bottom 5 products by gross profit
+- 💬 **AI Chat Assistant** — floating chat widget where users ask questions about the sales data in plain English and get back an explanation plus auto-generated charts
+- 🧠 **AI Agent-Generated Reports** — a scheduled n8n **LangChain AI Agent** that autonomously pulls spreadsheet data, calculates KPIs, writes analysis text, ranks products, forecasts next month, and produces a fully designed PDF report — emailed and archived automatically, with zero manual work
+- 🌗 Dark mode-aware charts (`prefers-color-scheme`)
+- 🔐 Supabase Auth login/register with cross-tab session sync
+- 📱 Responsive UI built with React & Tailwind CSS
 
 ---
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- React
+- React, React Router
 - Tailwind CSS
-- Recharts
+- Recharts (Bar, Line, Pie)
 
-### Backend / Automation
-- n8n
-- Google Gemini
-- Google Sheets API
-- Webhooks
+### Backend / Data
+- Supabase (Postgres tables `january`–`july`, Supabase Auth)
+
+### Automation / AI (n8n)
+- **LangChain AI Agent nodes** orchestrating Google Gemini
+- Google Sheets Tool & Calculator Tool (agent-callable tools)
+- PDF.co (HTML → PDF), Google Drive, SMTP email
+- Webhook trigger (chat) + Schedule trigger (monthly report)
 
 ---
 
-# Architecture
+## 🧠 The n8n AI Agents — Core of the Project
+
+This project runs **two separate n8n AI Agents**, both built on `@n8n/n8n-nodes-langchain.agent` with a Google Gemini chat model as the reasoning engine. The agent pattern is what lets these workflows go beyond simple "fetch data → format it" automation: each agent is given a goal, a set of callable tools, and a strict output contract, and it decides for itself which tools to call and in what order.
+
+### 1. Chat Data-Analysis Agent (real-time, webhook-triggered)
+
+Powers the chat widget in the dashboard.
+
+- **Trigger:** `ChatInput.jsx` posts `{ email, text }` to an n8n webhook.
+- **Reasoning:** the Gemini-backed agent interprets the free-text question, decides which monthly sheet(s)/tables are relevant, and plans the calculations needed to answer it.
+- **Tools available to the agent:**
+  - **Google Sheets / Data Tool** — lets the agent pull rows for any month on demand rather than the workflow pre-loading everything
+  - **Calculator Tool** — used for aggregations, comparisons, and margin/growth math so the LLM isn't doing arithmetic by itself
+  - **Conversation Memory** (email-keyed session) — keeps context across turns of the same conversation
+- **Output contract:** the agent must return strict JSON — a plain-language `reply` plus an optional `charts` array (`type`, `title`, `labels`, `datasets`) so the frontend can render the exact chart type the agent chose (bar/line/pie) with Recharts.
+
+### 2. Monthly Report Agent (scheduled, autonomous)
+
+Generates the full Sales & Inventory PDF report every month with no human input.
+
+- **Trigger:** `Monthly Schedule Trigger` (cron `0 6 1 * *` — 6 AM on the 1st of each month) → `Determine Current Month` computes the target month, date, and output filename.
+- **Reasoning:** the agent is instructed to pull the current month's sheet **and** attempt the previous month's sheet (for trend/prediction purposes), decide whether prior data was actually available, and only include a prediction section if it was.
+- **Tools available to the agent:**
+  - **Google Sheets Tool** — fetches the exact sheet tab named after the target month (and the prior month, if it exists)
+  - **Calculator Tool** — computes totals, averages, gross margins, and product rankings so figures are numerically reliable rather than model-estimated
+- **Strict JSON output contract** enforced via a detailed system prompt, including:
+  - `kpi` block (revenue, COGS, gross profit, average margin, units sold)
+  - `analysisText` — a natural-language summary that must reference the actual KPI numbers
+  - `prediction` — conditional forward-looking estimate, only populated when prior-month data was retrievable
+  - `topMargin` / `lowMargin` — top and bottom 3 products by margin
+  - `categoryRevenue` — full, unabbreviated category breakdown for charting
+  - `recommendations` — exactly 3 problem/action pairs
+  - Formatting rules baked into the prompt (no markdown fences, no `<`/`>` characters, peso-formatted currency, two-decimal percentages)
+- **Post-processing:** a Code node (`Render Report Template`) parses the agent's JSON, strips any stray formatting, and deterministically renders it into a styled HTML report — including a hand-built SVG bar chart for category revenue, computed in code rather than left to the model, so pixel math is always correct.
+- **Delivery pipeline:** HTML → **PDF.co** (HTML-to-PDF) → downloaded → **emailed via SMTP** and **uploaded to Google Drive**, fully unattended.
+
+**Why an agent instead of a fixed pipeline?** Both workflows hand the LLM real tools (Sheets, Calculator) and a goal, rather than pre-fetching and hardcoding every value. This lets the same agent gracefully handle missing data (e.g. no previous month sheet yet), variable category counts, and open-ended user questions — while a strict JSON schema in the system prompt keeps the output machine-parseable for the frontend and PDF renderer downstream.
+
+---
+
+## 🏗️ Architecture
+
+### Chat Assistant Flow
 
 ```text
-                React Frontend
+                React Chat Widget
                       │
-                POST Request
+                POST { email, text }
                       │
                n8n Webhook Trigger
                       │
-               Validate Request
-                      │
-                Google Gemini AI
+             Google Gemini AI Agent
               (LangChain Agent)
                       │
       ┌───────────────┴───────────────┐
       │                               │
-Conversation Memory          Google Sheets Tool
- (Email Session)             (Sales Dataset)
+Conversation Memory            Google Sheets Tool
+ (Email Session)              + Calculator Tool
       │                               │
       └───────────────┬───────────────┘
                       │
-            AI Generates JSON Response
-                      │
-          Format & Validate JSON Output
+        Agent decides tools + generates JSON
+          { reply, charts: [...] }
                       │
              Respond to React Frontend
                       │
       Display Answer + Interactive Charts
 ```
 
----
+### Monthly Report Flow
 
-# How It Works
-
-1. User enters their email address and question.
-2. React sends the request to an n8n webhook.
-3. n8n validates the request.
-4. Google Gemini receives the prompt.
-5. The AI reads data from Google Sheets when necessary.
-6. Gemini performs calculations and analysis.
-7. The AI returns:
-   - Business-friendly explanation
-   - Chart configuration (if appropriate)
-8. React renders the response and visualizes the charts using Recharts.
-
----
-
-# Supported Charts
-
-The AI automatically determines the appropriate visualization.
-
-### 📊 Bar Chart
-
-Used for comparing values between products or categories.
-
-Examples:
-
-- Revenue by Product
-- Gross Profit by Category
-- Units Sold by Product
-
----
-
-### 📈 Line Chart
-
-Used for trends over time.
-
-Examples:
-
-- Monthly Revenue
-- Monthly Gross Profit
-- Sales Trend
+```text
+        Monthly Schedule Trigger (1st, 6 AM)
+                      │
+             Determine Current Month
+                      │
+             Google Gemini AI Agent
+              (LangChain Agent)
+                      │
+      ┌───────────────┴───────────────┐
+      │                               │
+ Google Sheets Tool              Calculator Tool
+(current + previous month)      (KPIs, margins, ranks)
+      │                               │
+      └───────────────┬───────────────┘
+                      │
+        Agent generates structured JSON
+                      │
+        Render Report Template (Code node)
+         → styled HTML + computed SVG chart
+                      │
+             PDF.co: HTML → PDF
+                      │
+              Download Generated PDF
+                      │
+        ┌─────────────┴─────────────┐
+        │                           │
+  Send Email (SMTP)         Upload to Google Drive
+```
 
 ---
 
-### 🥧 Pie Chart
+## 📊 Supported Charts
 
-Used for share-of-whole analysis.
+Charts are chosen by the AI agent (chat) or computed deterministically (monthly report):
 
-Examples:
-
-- Revenue Share by Category
-- Product Contribution
-- Category Distribution
-
----
-
-# AI Capabilities
-
-The assistant can answer questions such as:
-
-- What was the highest selling product in March?
-- Show revenue trends from January to July.
-- Which category generated the highest profit?
-- Compare revenue between February and June.
-- Which products have the lowest remaining stock?
-- Show the top 5 products by gross profit.
-- What is the average gross margin for July?
-- Which month performed the best overall?
+| Chart | Used for |
+|-------|----------|
+| 📊 Bar | Revenue/profit/units by product or category |
+| 📈 Line | Monthly revenue or profit trends |
+| 🥧 Pie | Revenue share by category |
 
 ---
 
-# Data Source
+## 🗄️ Data Source
 
-The AI reads data from Google Sheets with separate tabs for each month.
+Live data lives in per-month Supabase tables (`january`–`july`) and mirrored Google Sheets tabs, both with the same schema:
 
-| Month |
-|-------|
-| January |
-| February |
-| March |
-| April |
-| May |
-| June |
-| July |
-
-Each sheet contains:
-
-| Column |
-|--------|
-| Product Name |
-| Category |
-| Units Sold |
-| Unit Cost |
-| Unit Price |
-| Revenue |
-| COGS |
-| Gross Profit |
-| Gross Margin (%) |
-| Stock Remaining |
+| Column | Description |
+|--------|-------------|
+| Product Name | Product identifier |
+| Category | Product category |
+| Units Sold | Units sold in the month |
+| Unit Cost / Unit Price | Cost and price per unit |
+| Revenue | Total revenue |
+| COGS | Cost of goods sold |
+| Gross Profit | Revenue minus COGS |
+| Gross Margin (%) | Profitability percentage |
+| Stock Remaining | Inventory left *(chat agent only; excluded from the monthly report JSON by design)* |
 
 ---
 
-# JSON Response Format
+## 📦 JSON Response Formats
 
-The AI returns structured JSON for the frontend.
+**Chat Agent → Frontend**
 
 ```json
 {
@@ -176,91 +177,57 @@ The AI returns structured JSON for the frontend.
     {
       "type": "bar",
       "title": "Revenue by Category",
-      "labels": [
-        "Rice",
-        "Beverages",
-        "Snacks"
-      ],
-      "datasets": [
-        {
-          "label": "Revenue",
-          "data": [
-            120000,
-            84000,
-            62000
-          ]
-        }
-      ]
+      "labels": ["Rice", "Beverages", "Snacks"],
+      "datasets": [{ "label": "Revenue", "data": [120000, 84000, 62000] }]
     }
   ]
 }
 ```
 
----
+**Monthly Report Agent → Render Template (excerpt)**
 
-# Frontend Features
-
-- Email-based conversation sessions
-- Auto-scroll chat
-- Loading indicator
-- Error handling
-- Responsive layout
-- Interactive charts
-- Multiple charts per response
-- Clean chat UI
-
----
-
-# n8n Workflow
-
-The workflow consists of:
-
-- Webhook Trigger
-- Request Validation
-- Google Gemini AI Agent
-- Conversation Memory
-- Google Sheets Tool
-- JSON Formatter
-- Webhook Response
-
-The workflow ensures that:
-
-- User input is validated
-- AI always fetches live spreadsheet data
-- Monthly tabs are selected dynamically
-- Responses are returned in a consistent JSON format
-- Invalid responses are normalized before reaching the frontend
-
----
-
-# Example Questions
-
-```
-What was the highest revenue product in July?
-
-Compare revenue between January and July.
-
-Show revenue by category.
-
-Which products have the lowest stock remaining?
-
-Which category generated the highest gross profit?
-
-Show a monthly revenue trend.
-
-What products have the highest gross margin?
-
-Compare gross profit across all months.
+```json
+{
+  "month": "July",
+  "kpi": {
+    "totalRevenue": 1250000,
+    "totalCOGS": 780000,
+    "totalGrossProfit": 470000,
+    "avgGrossMargin": 37.6,
+    "totalUnitsSold": 8420
+  },
+  "analysisText": "Revenue reached ₱1,250,000 in July...",
+  "prediction": { "available": true, "text": "Revenue is projected to rise..." },
+  "topMargin": [{ "name": "Product A", "marginPct": 52.14 }],
+  "lowMargin": [{ "name": "Product B", "marginPct": 8.02 }],
+  "categoryRevenue": [{ "category": "Beverages", "revenue": 320000 }],
+  "recommendations": [{ "problem": "Low margin on Product B", "action": "Review supplier pricing" }]
+}
 ```
 
 ---
 
+## 💡 Example Questions (Chat Assistant)
 
-# Demo
+```
+What was the highest selling product in March?
+Show revenue trends from January to July.
+Which category generated the highest profit?
+Compare revenue between February and June.
+What is the average gross margin for July?
+Which month performed the best overall?
+```
 
-<img width="1419" height="525" alt="image" src="https://github.com/user-attachments/assets/73ff8c39-a50c-4bac-a6d7-d74083c7b9d7" />
-<img width="1541" height="482" alt="image" src="https://github.com/user-attachments/assets/2ec8ef59-5376-4312-ae23-e7a1d9cebc9b" />
+## 📸 Screenshots
 
+### Dashboard — Overall Report
+<img width="1400" alt="Overall Report" src="PASTE_URL_HERE" />
 
----
+### Monthly Report
+<img width="1400" alt="Monthly Report" src="PASTE_URL_HERE" />
 
+### AI Chat Assistant
+<img width="1400" alt="Chat Assistant" src="PASTE_URL_HERE" />
+
+### n8n AI Agent Workflow — Monthly Report Automation
+<img width="1400" alt="n8n Workflow" src="PASTE_URL_HERE" />
