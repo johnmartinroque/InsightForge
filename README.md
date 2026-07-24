@@ -221,10 +221,15 @@ Which month performed the best overall?
 ## 📸 Screenshots
 
 ### Dashboard — Overall Report
-<img width="1400" alt="Overall Report" src="PASTE_URL_HERE" />
+<img width="1850" height="884" alt="image" src="https://github.com/user-attachments/assets/190a58f3-9688-42a8-b9f5-3fbd2f273046" />
+<img width="1821" height="494" alt="image" src="https://github.com/user-attachments/assets/db913be1-3ff9-4d3a-b2bd-bcfac0a3b777" />
+
 
 ### Monthly Report
 <img width="1400" alt="Monthly Report" src="PASTE_URL_HERE" />
+<img width="1828" height="584" alt="image" src="https://github.com/user-attachments/assets/0b36fa9b-a43b-4d87-b386-d5cda35da693" />
+
+
 
 ### AI Chat Assistant
 <img width="1400" alt="Chat Assistant" src="PASTE_URL_HERE" />
