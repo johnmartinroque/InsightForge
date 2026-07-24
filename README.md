@@ -230,4 +230,5 @@ Which month performed the best overall?
 <img width="1400" alt="Chat Assistant" src="PASTE_URL_HERE" />
 
 ### n8n AI Agent Workflow — Monthly Report Automation
-<img width="1400" alt="n8n Workflow" src="PASTE_URL_HERE" />
+<img width="1076" height="244" alt="image" src="https://github.com/user-attachments/assets/308f67a7-7170-4b2b-bb93-e51032d58c35" />
+
