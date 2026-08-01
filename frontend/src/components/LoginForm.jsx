@@ -1,21 +1,45 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabaseClient";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage("");
+    setIsSubmitting(true);
 
-    // Replace this block with your real auth call. Once you have a
-    // successful response, save whatever user object the API returns.
-    const userInfo = { email };
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+
+    setIsSubmitting(false);
+
+    if (error) {
+      setMessage(error.message);
+      return;
+    }
+
+    const userInfo = {
+      email: data.user?.email ?? email.trim(),
+      fullName:
+        data.user?.user_metadata?.full_name ||
+        data.user?.user_metadata?.name ||
+        email.trim(),
+    };
 
     localStorage.setItem("userInfo", JSON.stringify(userInfo));
     window.dispatchEvent(new Event("authChange"));
     navigate("/");
+
+    setEmail("");
+    setPassword("");
   };
 
   return (
@@ -112,11 +136,18 @@ function LoginForm() {
                 </a>
               </div>
 
+              {message ? (
+                <p className="mt-4 text-sm text-red-600 dark:text-red-400">
+                  {message}
+                </p>
+              ) : null}
+
               <button
                 type="submit"
-                className="mt-8 w-full h-11 rounded-full text-white bg-indigo-500 hover:bg-indigo-600 transition-colors shadow-md shadow-indigo-500/30"
+                disabled={isSubmitting}
+                className="mt-8 w-full h-11 rounded-full text-white bg-indigo-500 hover:bg-indigo-600 transition-colors shadow-md shadow-indigo-500/30 disabled:cursor-not-allowed disabled:opacity-70"
               >
-                Login
+                {isSubmitting ? "Signing in..." : "Login"}
               </button>
               <p className="text-gray-700 dark:text-gray-300 text-sm mt-4">
                 Don't have an account?{" "}
