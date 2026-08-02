@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { clearUserInfo, getStoredUserInfo } from "../lib/auth";
 
 function Header() {
   const [dark, setDark] = useState(() => {
@@ -10,14 +11,7 @@ function Header() {
     }
   });
 
-  const [user, setUser] = useState(() => {
-    try {
-      const stored = localStorage.getItem("userInfo");
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  const [user, setUser] = useState(() => getStoredUserInfo());
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -38,12 +32,7 @@ function Header() {
   // tab (via the custom "authChange" event) or another tab (via "storage").
   useEffect(() => {
     const syncUser = () => {
-      try {
-        const stored = localStorage.getItem("userInfo");
-        setUser(stored ? JSON.parse(stored) : null);
-      } catch {
-        setUser(null);
-      }
+      setUser(getStoredUserInfo());
     };
 
     window.addEventListener("authChange", syncUser);
@@ -67,7 +56,7 @@ function Header() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("userInfo");
+    clearUserInfo();
     setUser(null);
     setDropdownOpen(false);
     window.dispatchEvent(new Event("authChange"));

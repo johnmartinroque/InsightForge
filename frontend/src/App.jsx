@@ -11,23 +11,16 @@ import Home from "./screens/Home";
 import LandingScreen from "./screens/LandingScreen";
 import Header from "./components/Header";
 import ChatWidget from "./components/ChatWidget";
+import { getStoredUserInfo } from "./lib/auth";
 
 function ProtectedRoute({ children }) {
   const [isAuthenticated, setIsAuthenticated] = React.useState(() => {
-    try {
-      return Boolean(localStorage.getItem("userInfo"));
-    } catch {
-      return false;
-    }
+    return Boolean(getStoredUserInfo());
   });
 
   React.useEffect(() => {
     const syncAuth = () => {
-      try {
-        setIsAuthenticated(Boolean(localStorage.getItem("userInfo")));
-      } catch {
-        setIsAuthenticated(false);
-      }
+      setIsAuthenticated(Boolean(getStoredUserInfo()));
     };
 
     window.addEventListener("authChange", syncAuth);

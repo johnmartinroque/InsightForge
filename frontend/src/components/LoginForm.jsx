@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { clearUserInfo, storeUserInfo } from "../lib/auth";
 import { supabase } from "../lib/supabaseClient";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
@@ -22,6 +24,7 @@ function LoginForm() {
     setIsSubmitting(false);
 
     if (error) {
+      clearUserInfo();
       setMessage(error.message);
       return;
     }
@@ -34,7 +37,7 @@ function LoginForm() {
         email.trim(),
     };
 
-    localStorage.setItem("userInfo", JSON.stringify(userInfo));
+    storeUserInfo(userInfo, rememberMe);
     window.dispatchEvent(new Event("authChange"));
     navigate("/");
 
@@ -126,7 +129,13 @@ function LoginForm() {
 
               <div className="w-full flex items-center justify-between mt-8 text-gray-700 dark:text-gray-300">
                 <div className="flex items-center gap-2">
-                  <input className="h-5" type="checkbox" id="checkbox" />
+                  <input
+                    className="h-5"
+                    type="checkbox"
+                    id="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                  />
                   <label className="text-sm" htmlFor="checkbox">
                     Remember me
                   </label>
