@@ -81,17 +81,6 @@ function Header() {
               </span>
             </Link>
             <div className="flex items-center lg:order-2">
-              <button
-                type="button"
-                onClick={() => setDark((d) => !d)}
-                className="mr-2 rounded-full p-2 text-sm bg-gray-100 dark:bg-gray-700 transition-colors duration-200"
-                aria-label={
-                  dark ? "Switch to light mode" : "Switch to dark mode"
-                }
-              >
-                {dark ? "☀️" : "🌙"}
-              </button>
-
               {user ? (
                 <div className="relative mr-2" ref={dropdownRef}>
                   <button
@@ -153,6 +142,18 @@ function Header() {
               )}
 
               <button
+                type="button"
+                onClick={() => setDark((d) => !d)}
+                className="rounded-full p-2 text-sm bg-gray-100 dark:bg-gray-700 transition-colors duration-200"
+                aria-label={
+                  dark ? "Switch to light mode" : "Switch to dark mode"
+                }
+              >
+                {dark ? "☀️" : "🌙"}
+              </button>
+
+              {/*
+              <button
                 data-collapse-toggle="mobile-menu-2"
                 type="button"
                 className="inline-flex items-center p-2 ml-1 text-sm text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
@@ -185,6 +186,7 @@ function Header() {
                   ></path>
                 </svg>
               </button>
+              */}
             </div>
             {/* 
             <div
