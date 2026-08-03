@@ -12,9 +12,9 @@ A full-stack sales & inventory analytics platform combining a **React + Tailwind
 
 ## ✨ Features
 
+- **AI Chat Assistant** — a floating chat widget backed by an n8n AI Agent (Google Gemini) that reads live data from Google Sheets, reasons over one or more months, and replies with text **and** dynamically rendered Recharts visualizations (bar, line, or pie).
 - **Overall Report** — total revenue, gross profit, and units sold at a glance, plus a revenue trend line chart, a top-5 category pie chart, and a top-5 products bar chart.
 - **Monthly Report** — a month picker with summary cards (revenue, gross profit, units sold) and side-by-side "Top 3 Highest Profit" / "Top 3 Lowest Profit" product lists.
-- **AI Chat Assistant** — a floating chat widget backed by an n8n AI Agent (Google Gemini) that reads live data from Google Sheets, reasons over one or more months, and replies with text **and** dynamically rendered Recharts visualizations (bar, line, or pie).
 - **Authentication** — Supabase email/password auth with a "remember me" persisted session.
 - **Dark mode support** — charts and UI adapt automatically to `prefers-color-scheme`.
 
@@ -28,7 +28,7 @@ A full-stack sales & inventory analytics platform combining a **React + Tailwind
 │  (Overall + Monthly)  │◀──────│  one table per month       │        │  one tab per month  │
 └──────────────────────┘        └───────────────────────────┘        └──────────────────┘
           │                                                                    ▲
-          │  POST { email, text }                                             │
+          │  POST { text }                                             │
           ▼                                                                   │
 ┌──────────────────────┐        ┌───────────────────────────┐        ┌──────────────────┐
 │   Chat Widget         │──────▶│   n8n Webhook               │──────▶│  Google Sheets Tool │
