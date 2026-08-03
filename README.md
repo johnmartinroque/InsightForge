@@ -1,239 +1,193 @@
-# 📊 Insight Forge
+# 📊 InsightForge
 
-A full-stack sales and inventory analytics platform combining a **React dashboard**, a **Supabase** data layer, and **two n8n AI Agent workflows** powered by Google Gemini — one that answers natural-language questions in a live chat widget, and one that autonomously generates and emails a formatted monthly PDF report.
+A full-stack sales & inventory analytics platform combining a **React + Tailwind CSS** dashboard with a **Supabase** backend and an **n8n AI Agent** for natural-language data analysis. Users can explore KPIs, monthly breakdowns, and top/bottom performers visually — or simply ask the built-in AI chat assistant a question in plain English and get back a business-friendly answer complete with auto-generated charts.
 
----
-
-## 🚀 Features
-
-- 📈 **Overall Report** — aggregated KPIs, monthly revenue trend, top-5 revenue-by-category, and top-5 products by revenue, computed live across seven monthly Supabase tables
-- 🗓️ **Monthly Report** — month picker with per-month KPIs and top/bottom 5 products by gross profit
-- 💬 **AI Chat Assistant** — floating chat widget where users ask questions about the sales data in plain English and get back an explanation plus auto-generated charts
-- 🧠 **AI Agent-Generated Reports** — a scheduled n8n **LangChain AI Agent** that autonomously pulls spreadsheet data, calculates KPIs, writes analysis text, ranks products, forecasts next month, and produces a fully designed PDF report — emailed and archived automatically, with zero manual work
-- 🌗 Dark mode-aware charts (`prefers-color-scheme`)
-- 🔐 Supabase Auth login/register with cross-tab session sync
-- 📱 Responsive UI built with React & Tailwind CSS
+![status](https://img.shields.io/badge/status-active-brightgreen)
+![react](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)
+![tailwind](https://img.shields.io/badge/TailwindCSS-3-38B2AC?logo=tailwind-css&logoColor=white)
+![supabase](https://img.shields.io/badge/Supabase-Postgres-3ECF8E?logo=supabase&logoColor=white)
+![n8n](https://img.shields.io/badge/n8n-Workflow%20Automation-EA4B71?logo=n8n&logoColor=white)
 
 ---
 
-## 🛠️ Tech Stack
+## ✨ Features
 
-### Frontend
-- React, React Router
-- Tailwind CSS
-- Recharts (Bar, Line, Pie)
-
-### Backend / Data
-- Supabase (Postgres tables `january`–`july`, Supabase Auth)
-
-### Automation / AI (n8n)
-- **LangChain AI Agent nodes** orchestrating Google Gemini
-- Google Sheets Tool & Calculator Tool (agent-callable tools)
-- PDF.co (HTML → PDF), Google Drive, SMTP email
-- Webhook trigger (chat) + Schedule trigger (monthly report)
-
----
-
-## 🧠 The n8n AI Agents — Core of the Project
-
-This project runs **two separate n8n AI Agents**, both built on `@n8n/n8n-nodes-langchain.agent` with a Google Gemini chat model as the reasoning engine. The agent pattern is what lets these workflows go beyond simple "fetch data → format it" automation: each agent is given a goal, a set of callable tools, and a strict output contract, and it decides for itself which tools to call and in what order.
-
-### 1. Chat Data-Analysis Agent (real-time, webhook-triggered)
-
-Powers the chat widget in the dashboard.
-
-- **Trigger:** `ChatInput.jsx` posts `{ email, text }` to an n8n webhook.
-- **Reasoning:** the Gemini-backed agent interprets the free-text question, decides which monthly sheet(s)/tables are relevant, and plans the calculations needed to answer it.
-- **Tools available to the agent:**
-  - **Google Sheets / Data Tool** — lets the agent pull rows for any month on demand rather than the workflow pre-loading everything
-  - **Calculator Tool** — used for aggregations, comparisons, and margin/growth math so the LLM isn't doing arithmetic by itself
-  - **Conversation Memory** (email-keyed session) — keeps context across turns of the same conversation
-- **Output contract:** the agent must return strict JSON — a plain-language `reply` plus an optional `charts` array (`type`, `title`, `labels`, `datasets`) so the frontend can render the exact chart type the agent chose (bar/line/pie) with Recharts.
-
-### 2. Monthly Report Agent (scheduled, autonomous)
-
-Generates the full Sales & Inventory PDF report every month with no human input.
-
-- **Trigger:** `Monthly Schedule Trigger` (cron `0 6 1 * *` — 6 AM on the 1st of each month) → `Determine Current Month` computes the target month, date, and output filename.
-- **Reasoning:** the agent is instructed to pull the current month's sheet **and** attempt the previous month's sheet (for trend/prediction purposes), decide whether prior data was actually available, and only include a prediction section if it was.
-- **Tools available to the agent:**
-  - **Google Sheets Tool** — fetches the exact sheet tab named after the target month (and the prior month, if it exists)
-  - **Calculator Tool** — computes totals, averages, gross margins, and product rankings so figures are numerically reliable rather than model-estimated
-- **Strict JSON output contract** enforced via a detailed system prompt, including:
-  - `kpi` block (revenue, COGS, gross profit, average margin, units sold)
-  - `analysisText` — a natural-language summary that must reference the actual KPI numbers
-  - `prediction` — conditional forward-looking estimate, only populated when prior-month data was retrievable
-  - `topMargin` / `lowMargin` — top and bottom 3 products by margin
-  - `categoryRevenue` — full, unabbreviated category breakdown for charting
-  - `recommendations` — exactly 3 problem/action pairs
-  - Formatting rules baked into the prompt (no markdown fences, no `<`/`>` characters, peso-formatted currency, two-decimal percentages)
-- **Post-processing:** a Code node (`Render Report Template`) parses the agent's JSON, strips any stray formatting, and deterministically renders it into a styled HTML report — including a hand-built SVG bar chart for category revenue, computed in code rather than left to the model, so pixel math is always correct.
-- **Delivery pipeline:** HTML → **PDF.co** (HTML-to-PDF) → downloaded → **emailed via SMTP** and **uploaded to Google Drive**, fully unattended.
-
-**Why an agent instead of a fixed pipeline?** Both workflows hand the LLM real tools (Sheets, Calculator) and a goal, rather than pre-fetching and hardcoding every value. This lets the same agent gracefully handle missing data (e.g. no previous month sheet yet), variable category counts, and open-ended user questions — while a strict JSON schema in the system prompt keeps the output machine-parseable for the frontend and PDF renderer downstream.
+- **Overall Report** — total revenue, gross profit, and units sold at a glance, plus a revenue trend line chart, a top-5 category pie chart, and a top-5 products bar chart.
+- **Monthly Report** — a month picker with summary cards (revenue, gross profit, units sold) and side-by-side "Top 3 Highest Profit" / "Top 3 Lowest Profit" product lists.
+- **AI Chat Assistant** — a floating chat widget backed by an n8n AI Agent (Google Gemini) that reads live data from Google Sheets, reasons over one or more months, and replies with text **and** dynamically rendered Recharts visualizations (bar, line, or pie).
+- **Authentication** — Supabase email/password auth with a "remember me" persisted session.
+- **Dark mode support** — charts and UI adapt automatically to `prefers-color-scheme`.
 
 ---
 
 ## 🏗️ Architecture
 
-### Chat Assistant Flow
-
-```text
-                React Chat Widget
-                      │
-                POST { email, text }
-                      │
-               n8n Webhook Trigger
-                      │
-             Google Gemini AI Agent
-              (LangChain Agent)
-                      │
-      ┌───────────────┴───────────────┐
-      │                               │
-Conversation Memory            Google Sheets Tool
- (Email Session)              + Calculator Tool
-      │                               │
-      └───────────────┬───────────────┘
-                      │
-        Agent decides tools + generates JSON
-          { reply, charts: [...] }
-                      │
-             Respond to React Frontend
-                      │
-      Display Answer + Interactive Charts
+```
+┌──────────────────────┐        ┌───────────────────────────┐        ┌──────────────────┐
+│   React Dashboard     │──────▶│   Supabase (Postgres)      │        │   Google Sheets    │
+│  (Overall + Monthly)  │◀──────│  one table per month       │        │  one tab per month  │
+└──────────────────────┘        └───────────────────────────┘        └──────────────────┘
+          │                                                                    ▲
+          │  POST { email, text }                                             │
+          ▼                                                                   │
+┌──────────────────────┐        ┌───────────────────────────┐        ┌──────────────────┐
+│   Chat Widget         │──────▶│   n8n Webhook               │──────▶│  Google Sheets Tool │
+│   (ChatInput.jsx)     │◀──────│   → If → AI Agent → Format  │◀──────│  (per-month lookup) │
+└──────────────────────┘        └───────────────────────────┘        └──────────────────┘
+                                             │
+                                             ▼
+                                 ┌───────────────────────────┐
+                                 │  Google Gemini (via        │
+                                 │  LangChain) + Buffer       │
+                                 │  Window Memory             │
+                                 └───────────────────────────┘
 ```
 
-### Monthly Report Flow
+- The **dashboard** reads pre-aggregated sales rows directly from Supabase (one table per month: `january` … `july`).
+- The **chat widget** talks to a separate n8n webhook, which drives an AI Agent that queries **Google Sheets** (not Supabase) as its source of truth for conversational analysis, then returns a strict JSON payload the frontend renders as chat bubbles + charts.
 
-```text
-        Monthly Schedule Trigger (1st, 6 AM)
-                      │
-             Determine Current Month
-                      │
-             Google Gemini AI Agent
-              (LangChain Agent)
-                      │
-      ┌───────────────┴───────────────┐
-      │                               │
- Google Sheets Tool              Calculator Tool
-(current + previous month)      (KPIs, margins, ranks)
-      │                               │
-      └───────────────┬───────────────┘
-                      │
-        Agent generates structured JSON
-                      │
-        Render Report Template (Code node)
-         → styled HTML + computed SVG chart
-                      │
-             PDF.co: HTML → PDF
-                      │
-              Download Generated PDF
-                      │
-        ┌─────────────┴─────────────┐
-        │                           │
-  Send Email (SMTP)         Upload to Google Drive
+---
+
+## 🧰 Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React, React Router, Tailwind CSS, Recharts |
+| Backend / DB | Supabase (Postgres + Auth) |
+| Automation / AI | n8n, Google Gemini (LangChain node), Google Sheets |
+| Data source (chat agent) | Google Sheets — one tab per month |
+| Data source (dashboard) | Supabase — one table per month |
+
+---
+
+## 🔁 n8n Workflow: AI Data Analysis Agent
+
+This workflow powers the in-app chat assistant. It exposes a webhook that accepts a user's question, routes it through validation, and hands it to a Gemini-powered LangChain agent equipped with a Google Sheets tool.
+
+### Workflow steps
+
+1. **Webhook** — `POST` endpoint that accepts `{ email, text }` from the chat widget.
+2. **If (validation)** — checks that `body.text` exists and is non-empty.
+   - ❌ Fails → **Respond Error** returns `400` with `{ "error": "Message text is required." }`.
+   - ✅ Passes → continues to the AI Agent.
+3. **AI Agent** (LangChain Agent node, powered by **Google Gemini Chat Model**)
+   - System prompt instructs the agent that the spreadsheet has **one tab per month** (January–July), with columns: `Product Name, Category, Units Sold, Unit Cost, Unit Price, Revenue, COGS, Gross Profit, Gross Margin (%), Stock Remaining`.
+   - The agent decides which month(s) are relevant to the question, calls the **Google Sheets Tool** once per month tab needed, and performs any aggregation (sums, averages, comparisons) itself rather than trusting single cells blindly.
+   - The agent is instructed to reply with **strict JSON only** — no markdown fences, no preamble — shaped as:
+     ```json
+     {
+       "reply": "business-friendly text answer",
+       "charts": [
+         {
+           "type": "bar | line | pie",
+           "title": "Chart title",
+           "labels": ["Label A", "Label B"],
+           "datasets": [{ "label": "Series name", "data": [123, 456] }]
+         }
+       ]
+     }
+     ```
+   - Chart-type rules are baked into the prompt: **bar** for category comparisons within a snapshot, **line** for month-over-month trends, **pie** for share-of-whole breakdowns, and **separate chart objects** for naturally distinct groupings (e.g. "highest vs. lowest").
+4. **Google Sheets Tool** — a LangChain tool node the agent calls with a dynamic `Sheet` parameter (`$fromAI`) to pick which month tab to read.
+5. **Simple Memory (Buffer Window)** — maintains short-term conversational context per session.
+6. **Format Agent Output (Code node)** — defensively parses the agent's raw output:
+   - Extracts the first `{...}` JSON block in case the model added stray text.
+   - Falls back to `{ reply: rawText, charts: [] }` if parsing fails.
+   - Normalizes both the current `charts` array and a legacy single `chart` object into one consistent `charts` array.
+7. **Respond Success** — returns the final `{ reply, charts }` JSON to the webhook caller.
+
+### Why the Code node matters
+
+LLM output isn't always perfectly clean JSON — models can prepend commentary or wrap responses in markdown fences. The **Format Agent Output** node guarantees the frontend always receives a predictable, safely-parsed shape, so the chat UI never crashes on a malformed response.
+
+### Importing the workflow
+
+1. In n8n, go to **Workflows → Import from File** and select `sales-dashboard-agent.json`.
+2. Reconnect credentials for:
+   - **Google Gemini (PaLM) API**
+   - **Google Sheets OAuth2**
+3. Update the **Google Sheets Tool** node's `documentId` to point at your own spreadsheet (one tab per month, same column layout as above).
+4. Activate the workflow and copy the **Webhook URL** — this becomes `VITE_N8N_WEBHOOK_URL` in the frontend `.env`.
+
+---
+
+## 🖥️ Frontend
+
+### Pages & Components
+
+```
+src/
+├── pages/
+│   └── Home.jsx                     # renders <Dashboard />
+├── components/
+│   ├── dashboard/
+│   │   ├── Dashboard.jsx            # page shell: Overall + Monthly sections
+│   │   ├── OverallReport.jsx        # KPIs, revenue trend, category pie, top products
+│   │   ├── overall/
+│   │   │   ├── KPI.jsx
+│   │   │   ├── RevenueTrend.jsx
+│   │   │   ├── RevenueByCategory.jsx
+│   │   │   └── TopProductByRevenue.jsx
+│   │   ├── MonthlyReport.jsx        # month selector + summary + profit lists
+│   │   └── monthly/
+│   │       ├── MonthlyReportHeader.jsx
+│   │       ├── MonthlySummaryCards.jsx
+│   │       └── ProfitList.jsx
+│   ├── ChatWidget.jsx                # floating launcher + panel
+│   ├── ChatInput.jsx                 # chat UI, calls the n8n webhook, renders charts
+│   ├── LoginForm.jsx
+│   └── RegisterForm.jsx
+└── lib/
+    ├── supabaseClient.js
+    └── auth.js
+```
+
+### Key implementation notes
+
+- **`OverallReport.jsx` / `MonthlyReport.jsx`** each fetch all seven month tables from Supabase in parallel (`Promise.all`), then aggregate revenue, gross profit, and units sold client-side.
+- **`ChatInput.jsx`** posts `{ email, text }` to the n8n webhook, parses the JSON response, and renders each returned chart with a shared `ChartCard` component built on **Recharts** (bar / line / pie), with full light/dark theming via `prefers-color-scheme`.
+- **`ChatWidget.jsx`** is a lightweight floating action button that toggles a modal-style chat panel.
+- **Auth** uses `supabase.auth.signInWithPassword` / `signUp`, storing a lightweight user object via `storeUserInfo` (persisted in `localStorage` when "remember me" is checked).
+
+---
+
+## ⚙️ Setup
+
+### Prerequisites
+
+- Node.js 18+
+- A Supabase project with one table per month (`january` … `july`) containing the columns listed above
+- An n8n instance (cloud or self-hosted) with the workflow imported and activated
+- A Google Cloud project with Gemini API access and Google Sheets OAuth credentials
+
+### Environment variables
+
+Create a `.env` file in the project root:
+
+```env
+VITE_SUPABASE_URL=your-supabase-project-url
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+VITE_N8N_WEBHOOK_URL=https://your-n8n-instance/webhook/your-webhook-id
+```
+
+### Install & run
+
+```bash
+npm install
+npm run dev
 ```
 
 ---
 
-## 📊 Supported Charts
+## 🗺️ Roadmap
 
-Charts are chosen by the AI agent (chat) or computed deterministically (monthly report):
-
-| Chart | Used for |
-|-------|----------|
-| 📊 Bar | Revenue/profit/units by product or category |
-| 📈 Line | Monthly revenue or profit trends |
-| 🥧 Pie | Revenue share by category |
+- [ ] Automated monthly PDF report generation (scheduled n8n agent → email + Google Drive)
+- [ ] Product-level drill-down views
+- [ ] Configurable date ranges beyond fixed monthly tabs
+- [ ] Multi-user role-based dashboard access
 
 ---
 
-## 🗄️ Data Source
+## 📄 License
 
-Live data lives in per-month Supabase tables (`january`–`july`) and mirrored Google Sheets tabs, both with the same schema:
-
-| Column | Description |
-|--------|-------------|
-| Product Name | Product identifier |
-| Category | Product category |
-| Units Sold | Units sold in the month |
-| Unit Cost / Unit Price | Cost and price per unit |
-| Revenue | Total revenue |
-| COGS | Cost of goods sold |
-| Gross Profit | Revenue minus COGS |
-| Gross Margin (%) | Profitability percentage |
-| Stock Remaining | Inventory left *(chat agent only; excluded from the monthly report JSON by design)* |
-
----
-
-## 📦 JSON Response Formats
-
-**Chat Agent → Frontend**
-
-```json
-{
-  "reply": "July generated the highest revenue.",
-  "charts": [
-    {
-      "type": "bar",
-      "title": "Revenue by Category",
-      "labels": ["Rice", "Beverages", "Snacks"],
-      "datasets": [{ "label": "Revenue", "data": [120000, 84000, 62000] }]
-    }
-  ]
-}
-```
-
-**Monthly Report Agent → Render Template (excerpt)**
-
-```json
-{
-  "month": "July",
-  "kpi": {
-    "totalRevenue": 1250000,
-    "totalCOGS": 780000,
-    "totalGrossProfit": 470000,
-    "avgGrossMargin": 37.6,
-    "totalUnitsSold": 8420
-  },
-  "analysisText": "Revenue reached ₱1,250,000 in July...",
-  "prediction": { "available": true, "text": "Revenue is projected to rise..." },
-  "topMargin": [{ "name": "Product A", "marginPct": 52.14 }],
-  "lowMargin": [{ "name": "Product B", "marginPct": 8.02 }],
-  "categoryRevenue": [{ "category": "Beverages", "revenue": 320000 }],
-  "recommendations": [{ "problem": "Low margin on Product B", "action": "Review supplier pricing" }]
-}
-```
-
----
-
-## 💡 Example Questions (Chat Assistant)
-
-```
-What was the highest selling product in March?
-Show revenue trends from January to July.
-Which category generated the highest profit?
-Compare revenue between February and June.
-What is the average gross margin for July?
-Which month performed the best overall?
-```
-
-## 📸 Screenshots
-
-### Dashboard — Overall Report
-<img width="1850" height="884" alt="image" src="https://github.com/user-attachments/assets/190a58f3-9688-42a8-b9f5-3fbd2f273046" />
-<img width="1821" height="494" alt="image" src="https://github.com/user-attachments/assets/db913be1-3ff9-4d3a-b2bd-bcfac0a3b777" />
-
-
-### Monthly Report
-<img width="1400" alt="Monthly Report" src="PASTE_URL_HERE" />
-<img width="1828" height="584" alt="image" src="https://github.com/user-attachments/assets/0b36fa9b-a43b-4d87-b386-d5cda35da693" />
-
-
-
-### AI Chat Assistant
-
-
-### n8n AI Agent Workflow — Monthly Report Automation
-<img width="1076" height="244" alt="image" src="https://github.com/user-attachments/assets/308f67a7-7170-4b2b-bb93-e51032d58c35" />
-
+MIT
