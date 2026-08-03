@@ -179,15 +179,25 @@ npm run dev
 
 ---
 
-## 🗺️ Roadmap
-
-- [ ] Automated monthly PDF report generation (scheduled n8n agent → email + Google Drive)
-- [ ] Product-level drill-down views
-- [ ] Configurable date ranges beyond fixed monthly tabs
-- [ ] Multi-user role-based dashboard access
 
 ---
 
-## 📄 License
+## 📸 Screenshots
 
-MIT
+
+### AI Chat Assistant
+![Chat Assistant](./screenshots/chat-assistant.png)
+*Ask questions in plain English and get back answers with auto-generated charts.*
+
+### Overall Report
+![Overall Report](./screenshots/overall-report.png)
+*KPI cards, revenue trend, top categories, and top products at a glance.*
+
+### Monthly Report
+![Monthly Report](./screenshots/monthly-report.png)
+*Month-by-month breakdown with highest/lowest profit products.*
+
+
+### Dark Mode
+![Dark Mode](./screenshots/dark-mode.png)
+*Fully themed dashboard and charts for light/dark preference.*
