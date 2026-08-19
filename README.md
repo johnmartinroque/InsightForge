@@ -190,11 +190,11 @@ npm run dev
 *Ask questions in plain English and get back answers with auto-generated charts.*
 
 ### Overall Report
-![Overall Report](./screenshots/overall-report.png)
+<img width="1852" height="952" alt="insightforge1" src="https://github.com/user-attachments/assets/e9143859-cc65-4c80-9799-db042d1a2d3b" />
 *KPI cards, revenue trend, top categories, and top products at a glance.*
 
 ### Monthly Report
-![Monthly Report](./screenshots/monthly-report.png)
+<img width="1848" height="948" alt="insightforge2" src="https://github.com/user-attachments/assets/cbd877c2-aa42-42cd-8578-8ebb3b6483ba" />
 *Month-by-month breakdown with highest/lowest profit products.*
 
 
