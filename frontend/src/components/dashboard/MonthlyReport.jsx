@@ -12,6 +12,7 @@ const MONTH_OPTIONS = [
   { value: "may", label: "May" },
   { value: "june", label: "June" },
   { value: "july", label: "July" },
+  { value: "august", label: "august" },
 ];
 
 function formatCurrency(value) {
