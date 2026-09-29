@@ -162,7 +162,7 @@ function LoginForm() {
                 Don't have an account?{" "}
                 <a
                   className="text-indigo-500 dark:text-indigo-400 hover:underline"
-                  href="#"
+                  href="/register"
                 >
                   Sign up
                 </a>

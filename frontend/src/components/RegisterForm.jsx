@@ -247,7 +247,7 @@ function RegisterForm() {
                 Already have an account?{" "}
                 <a
                   className="text-indigo-500 dark:text-indigo-400 hover:underline"
-                  href="#"
+                  href="/login"
                 >
                   Sign in
                 </a>
